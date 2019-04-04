@@ -87,7 +87,3 @@ class Board
     @board[7][4] = Queen.new(@w_queen, W)
   end
 end
-board = Board.new
-board.generate
-board.add_pieces_to_board
-board.display
