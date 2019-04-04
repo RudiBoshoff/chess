@@ -3,7 +3,12 @@ require_relative 'piece'
 class Board
   attr_accessor :board
 
+  B = 'black'.freeze
+  W = 'white'.freeze
+
   def initialize
+    # Assigns utf8 codes for each type of piece
+    # white
     @w_pawn = "\u265F "
     @w_rook = "\u265C "
     @w_knight = "\u265E "
@@ -11,6 +16,7 @@ class Board
     @w_queen = "\u265B "
     @w_king = "\u265A "
 
+    # black
     @b_pawn = "\u2659 "
     @b_rook = "\u2656 "
     @b_knight = "\u2658 "
@@ -18,68 +24,67 @@ class Board
     @b_queen = "\u2655 "
     @b_king = "\u2654 "
 
+    # empty block
     # @blank = "\u26F6 "  empty square
-
     @blank = " \u00b7"
   end
 
   def generate
-    # Creates board filled with blanks
-    @board = Array.new(8) { Array.new(9, @blank.force_encoding('utf-8')) }
+    # Creates board, a 2D Array, filled with blanks
+    @board = Array.new(8) { Array.new(9, Piece.new(@blank)) }
 
     # Creates labels for board
     @board.each_with_index do |_, index|
-      @board[index][0] = (@board.size - index).to_s + '  '
+      @board[index][0] = Piece.new((@board.size - index).to_s + '  ')
     end
   end
 
   def display
-    width = @board.flatten.max.to_s.size
+    # Displays board
     puts "\n"
-    puts @board.map { |a| a.map(&:to_s).join }
+    puts @board.map { |array| array.map{|piece| piece.appearance}.join}
     puts "\n"
+
+    # Displays labels
     labels = %w[A B C D E F G H]
     labels.unshift ' '
-    puts labels.map { |i| i.to_s.rjust(width) }.join
+    puts labels.map { |i| i.to_s.rjust(2) }.join
   end
 
   def add_pieces_to_board
     # Adds pawns to board
-
     row = 1
     while row < 9
-      @board[1][row] = @b_pawn
-      @board[6][row] = @w_pawn
+      @board[1][row] = Pawn.new(@b_pawn, B)
+      @board[6][row] = Pawn.new(@w_pawn, W)
       row += 1
     end
 
-
-
     # Adds rooks to board
-    @board[0][1] = @b_rook
-    @board[0][8] = @b_rook
-    @board[7][1] = @w_rook
-    @board[7][8] = @w_rook
+    @board[0][1] = Rook.new(@b_rook, B)
+    @board[0][8] = Rook.new(@b_rook, B)
+    @board[7][1] = Rook.new(@w_rook, W)
+    @board[7][8] = Rook.new(@w_rook, W)
 
     # Adds knights to board
-    @board[0][2] = @b_knight
-    @board[0][7] = @b_knight
-    @board[7][2] = @w_knight
-    @board[7][7] = @w_knight
+    @board[0][2] = Knight.new(@b_knight, B)
+    @board[0][7] = Knight.new(@b_knight, B)
+    @board[7][2] = Knight.new(@w_knight, W)
+    @board[7][7] = Knight.new(@w_knight, W)
 
     # Adds bishops to board
-    @board[0][3] = @b_bishop
-    @board[0][6] = @b_bishop
-    @board[7][3] = @w_bishop
-    @board[7][6] = @w_bishop
+    @board[0][3] = Bishop.new(@b_bishop, B)
+    @board[0][6] = Bishop.new(@b_bishop, B)
+    @board[7][3] = Bishop.new(@w_bishop, W)
+    @board[7][6] = Bishop.new(@w_bishop, W)
 
     # Adds kings to baord
-    @board[0][5] = @b_king
-    @board[7][5] = @w_king
+    @board[0][5] = King.new(@b_king, B)
+    @board[7][5] = King.new(@w_king, W)
 
     # Adds queens to board
-    @board[0][4] = @b_queen
-    @board[7][4] = @w_queen
+    @board[0][4] = Queen.new(@b_queen, B)
+    @board[7][4] = Queen.new(@w_queen, W)
   end
 end
 board = Board.new
