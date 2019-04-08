@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Board
-  attr_accessor :board, :blank
+  attr_accessor :board, :blank, :log
 
   B = 'black'.freeze
   W = 'white'.freeze
@@ -27,6 +27,9 @@ class Board
     # empty block
     @blank = "\u26F6 "
     # @blank = " \u00b7"
+
+    # list of moves
+    @log = ""
   end
 
   def generate
