@@ -15,6 +15,7 @@ class Chess
       # user input should get "e3" move format or a command eg. "exit"
       select_piece
       input = gets.chomp.upcase
+      @log1 = input
 
       # check for coordinates eg. "e3"
       if valid_input?(input)
@@ -29,6 +30,7 @@ class Chess
           # select new location for piece
           select_location
           location = gets.chomp.upcase
+          @log2 = location
 
           # check for new coordinates eg. "e3"
           if valid_input?(location)
@@ -43,6 +45,7 @@ class Chess
               # passes all tests so moves piece
               valid = true
               update_board(row, col, row_new, col_new)
+              log_move
             end
           end
 
@@ -140,6 +143,12 @@ class Chess
     @chess_board.board[row][col] = Piece.new(@chess_board.blank)
   end
 
+  def log_move
+    #update log
+    @chess_board.log += "#{@log1} #{@log2},"
+    @log = @chess_board.log
+  end
+
   def welcome_message
     puts 'Welcome Chess!'
     puts "Please use explicit syntax to move pieces.\n\n"
@@ -151,7 +160,7 @@ class Chess
   end
 
   def clear_display
-    system('clear') || system('clc')
+    # system('clear') || system('clc')
   end
 
   def display_board
@@ -167,6 +176,7 @@ class Chess
     welcome_message
     display_board
     loop do
+      puts "log:#{@log}"
       user_input
       change_player
       clear_display
