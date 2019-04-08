@@ -1,7 +1,7 @@
 require_relative 'piece'
 
 class Board
-  attr_accessor :board
+  attr_accessor :board, :blank
 
   B = 'black'.freeze
   W = 'white'.freeze
@@ -25,8 +25,8 @@ class Board
     @b_king = "\u2654 "
 
     # empty block
-    # @blank = "\u26F6 "  empty square
-    @blank = " \u00b7"
+    @blank = "\u26F6 "
+    # @blank = " \u00b7"
   end
 
   def generate
@@ -53,11 +53,11 @@ class Board
 
   def add_pieces_to_board
     # Adds pawns to board
-    row = 1
-    while row < 9
-      @board[1][row] = Pawn.new(@b_pawn, B)
-      @board[6][row] = Pawn.new(@w_pawn, W)
-      row += 1
+    col = 1
+    while col < 9
+      @board[1][col] = Pawn.new(@b_pawn, B)
+      @board[6][col] = Pawn.new(@w_pawn, W)
+      col += 1
     end
 
     # Adds rooks to board

@@ -15,6 +15,7 @@ class Pawn < Piece
     super
   end
 
+
 end
 
 class Knight < Piece
