@@ -12,106 +12,143 @@ class Chess
   def user_input
     valid = false
     until valid
-      selected_piece = select_piece
-      puts selected_piece
-      if valid_input?(selected_piece)
-        piece_colour(selected_piece)
-        piece_type
-        select_location
-        if valid_input?(select_location)
-          valid = true
+      # user input should get "e3" move format or a command eg. "exit"
+      select_piece
+      input = gets.chomp.upcase
+
+      # check for coordinates eg. "e3"
+      if valid_input?(input)
+        row = input_to_row(input[1])
+        col = input_to_column(input[0])
+
+        # check if piece is same colour as player
+        piece_colour(row, col)
+        if @piece_colour == @player_turn
+          # determine piece type: used later(king next to king)
+          piece_type(row, col)
+          # select new location for piece
+          select_location
+          location = gets.chomp.upcase
+
+          # check for new coordinates eg. "e3"
+          if valid_input?(location)
+            row_new = input_to_row(location[1])
+            col_new = input_to_column(location[0])
+            
+            # check if new coordinates = old coordinates
+            if row_new == row && col_new == col
+              valid = false
+              puts 'You cant enter the same location'
+            else
+              # passes all tests so moves piece
+              valid = true
+              update_board(row, col, row_new, col_new)
+            end
+          end
+
+        # piece is not same colour as player
+        else
+          puts 'You must move your own piece'
         end
+
+      # check for command
+      elsif check_for_command(input)
+        valid = true
+
+      # input is invalid
+      else
+        puts 'Invalid input'
       end
     end
   end
 
   def select_piece
-    puts "It is #{@player_turn}'s turn. Select a chess piece"
-    gets.chomp.upcase
+    puts "It is #{@player_turn}'s turn. Select a chess piece or enter a command"
   end
 
   def valid_input?(position)
-    case position
+    true if position =~ /\A[a-h][1-8]\z/i
+  end
+
+  def input_to_row(row)
+    8 - row.to_i
+  end
+
+  def input_to_column(col)
+    case col
+    when 'A'
+      1
+    when 'B'
+      2
+    when 'C'
+      3
+    when 'D'
+      4
+    when 'E'
+      5
+    when 'F'
+      6
+    when 'G'
+      7
+    when 'H'
+      8
+    end
+  end
+
+  def piece_colour(row, col)
+    @piece_colour = @chess_board.board[row][col].colour
+  end
+
+  def piece_type(row, col)
+    @piece_type = @chess_board.board[row][col].class.to_s
+  end
+
+  def select_location
+    puts "#{@piece_type} selected. Place selected piece"
+  end
+
+  def check_for_command(command)
+    case command
     when 'EXIT'
       exit
     when 'DRAW'
       exit
     when 'CASTLE'
       puts 'castling'
+      true
       # castling function
-      return true
     when 'SAVE'
       puts 'saving game'
+      true
       # save function
-      return true
     when 'LOAD'
       puts 'loading game'
+      true
       # load function
-      return true
-    else
-      return true if position =~ /\A[a-h][1-8]\z/i
     end
-    false
   end
 
-  def piece_colour(selected_piece)
-    @current_pos = input_to_row_column(selected_piece[1], selected_piece[0])
-    puts @current_pos
-    @piece_colour = @chess_board.board[@current_pos[1]][@current_pos[0]].colour
-  end
-
-  def piece_type
-    @piece_type = @chess_board.board[@current_pos[1]][@current_pos[0]].class.to_s
-  end
-
-  def select_location
-    puts "#{@piece_type} selected. Place selected piece"
-    gets.chomp.upcase
-  end
-
-  def move_piece
+  def move_piece(_location)
     new_pos = input_to_row_column(@location[1], @location[0])
     update_board(@current_pos, new_pos)
   end
 
-  def input_to_row_column(row, col)
-    row = 8 - row.to_i
-
-    case col
-    when 'A'
-      col = 1
-    when 'B'
-      col = 2
-    when 'C'
-      col = 3
-    when 'D'
-      col = 4
-    when 'E'
-      col = 5
-    when 'F'
-      col = 6
-    when 'G'
-      col = 7
-    when 'H'
-      col = 8
-    end
-
-    [row, col]
+  def update_board(row, col, row_new, col_new)
+    # Moves piece to new location
+    @chess_board.board[row_new][col_new] = @chess_board.board[row][col]
+    # Replaces olf location with a blank
+    @chess_board.board[row][col] = Piece.new(@chess_board.blank)
   end
 
-  def update_board(current_position, new_position)
-    row = new_position.first
-    col = new_position.last
-
-    old_row = current_position.first
-    old_col = current_position.last
-
-    @chess_board.board[row][col] = @chess_board.board[old_row][old_col]
-
-    @chess_board.board[old_row][old_col] = Piece.new(@chess_board.blank)
+  def welcome_message
+    puts 'Welcome Chess!'
+    puts "Please use explicit syntax to move pieces.\n\n"
+    puts "First select the piece you would like to move eg. 'a2'"
+    puts "Then when prompted select where you would like to move that piece eg. 'a4'\n\n"
+    puts "You can save, load, or exit your game by typing 'save', 'load', or 'exit'"
+    puts "You can also propose a draw by entering 'draw'."
+    puts 'Good luck!'
   end
-
-  def welcome_message; end
 
   def clear_display
     system('clear') || system('clc')
@@ -131,7 +168,6 @@ class Chess
     display_board
     loop do
       user_input
-      move_piece
       change_player
       clear_display
       display_board

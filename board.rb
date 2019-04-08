@@ -40,7 +40,7 @@ class Board
   end
 
   def display
-    # Displays board
+    # Displays board with pieces
     puts "\n"
     puts @board.map { |array| array.map{|piece| piece.appearance}.join}
     puts "\n"
