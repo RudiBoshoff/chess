@@ -34,7 +34,7 @@ class Chess
           if valid_input?(location)
             row_new = input_to_row(location[1])
             col_new = input_to_column(location[0])
-            
+
             # check if new coordinates = old coordinates
             if row_new == row && col_new == col
               valid = false
@@ -128,7 +128,7 @@ class Chess
     end
   end
 
-  def move_piece(_location)
+  def move_piece(location)
     new_pos = input_to_row_column(@location[1], @location[0])
     update_board(@current_pos, new_pos)
   end
@@ -136,7 +136,7 @@ class Chess
   def update_board(row, col, row_new, col_new)
     # Moves piece to new location
     @chess_board.board[row_new][col_new] = @chess_board.board[row][col]
-    # Replaces olf location with a blank
+    # Replaces old location with a blank
     @chess_board.board[row][col] = Piece.new(@chess_board.blank)
   end
 
