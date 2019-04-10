@@ -9,75 +9,210 @@ class Chess
     @player_turn = Board::W
   end
 
-  def user_input
-    valid = false
-    until valid
-      # user input should get "e3" move format or a command eg. "exit"
-      select_piece
-      input = gets.chomp.upcase
-      @log1 = input
+  def play_game
+    take_turn until game_over?
+  end
 
-      # check for coordinates eg. "e3"
-      if valid_input?(input)
-        row = input_to_row(input[1])
-        col = input_to_column(input[0])
-
-        # check if piece is same colour as player
-        piece_colour(row, col)
-        if @piece_colour == @player_turn
-          # determine piece type: used later(king next to king)
-          piece_type(row, col)
-          # select new location for piece
-          select_location
-          location = gets.chomp.upcase
-          @log2 = location
-
-          # check for new coordinates eg. "e3"
-          if valid_input?(location)
-            row_new = input_to_row(location[1])
-            col_new = input_to_column(location[0])
-
-            # check if new coordinates = old coordinates
-            if row_new == row && col_new == col
-              valid = false
-              puts 'You cant enter the same location'
-            else
-              # passes all tests so moves piece
-              valid = true
-              update_board(row, col, row_new, col_new)
-              log_move
-            end
-          end
-
-        # piece is not same colour as player
-        else
-          puts 'You must move your own piece'
-        end
-
-      # check for command
-      elsif check_for_command(input)
-        valid = true
-
-      # input is invalid
-      else
-        puts 'Invalid input'
+  def game_over?
+    if check?
+      if mate?
+        true
       end
+    elsif stalemate? || draw?
+      true
     end
   end
 
-  def select_piece
-    puts "It is #{@player_turn}'s turn. Select a chess piece or enter a command"
+##########################################
+  # game_over? submethods
+  def check?
+    false
   end
 
-  def valid_input?(position)
-    true if position =~ /\A[a-h][1-8]\z/i
+  def mate?
+    false
+  end
+
+  def stalemate?
+    false
+  end
+
+  def draw?
+    false
+  end
+  # game_over? submethods
+##########################################
+
+  def take_turn
+    clear_display
+    welcome_message
+    display_board
+    player_input
+    change_player
+  end
+
+##########################################
+  # take_turn submethods
+  def clear_display
+    # system('clear') || system('clc')
+  end
+
+  def welcome_message
+    # puts 'Welcome Chess!'
+    # puts "Please use explicit syntax to move pieces.\n\n"
+    # puts "You can save, load, or exit your game by typing 'save', 'load', or 'exit'"
+    # puts "You can also propose a draw by entering 'draw'."
+    # puts 'Good luck!'
+  end
+
+  def display_board
+    @chess_board.display
+  end
+
+  def player_input
+    valid = false
+    until valid
+        input
+        if coordinates?
+          if valid_move?
+            puts "move valid"
+            update_board
+            valid = true
+          else
+            valid = false
+          end
+        elsif command?
+          execute_command
+        else
+          valid = false
+        end
+      end
+  end
+
+  def change_player
+    @player_turn = @player_turn == Board::W ? Board::B : Board::W
+  end
+  # take_turn submethods
+##########################################
+
+
+
+##########################################
+  # player_input submethods
+  def input
+    puts "It's #{@player_turn}'s turn. Please enter your move/ command."
+    @input = gets.chomp.upcase
+  end
+
+  def coordinates?
+    true if @input =~ /\A[a-h][1-8][a-h][1-8]\z/i
+  end
+
+  def valid_move?
+    separate_coordinates
+    return false if didnt_move?
+    return false unless selected_piece_colour == @player_turn
+    return false if destnation_colour == @player_turn
+    return false unless legal_moves.include?(move)
+    false if puts_in_check?
+    return false if destnation_piece_type == "King"
+    true
+  end
+
+  def update_board
+    puts "updating board"
+    move_piece
+    remove_piece
+  end
+
+  def move_piece
+    @chess_board.board[@row_new][@col_new] = @chess_board.board[@row][@col]
+  end
+
+  def remove_piece
+    @chess_board.board[@row][@col] = Piece.new(@chess_board.blank)
+  end
+
+  def command?
+    command = ['EXIT','DRAW','LOAD','SAVE','CASTLE']
+    true if command.include? @input
+  end
+
+  def execute_command
+    case @input
+    when 'EXIT'
+      puts "Exiting game..."
+      exit
+    when 'DRAW'
+      puts "It's a draw. Exiting game..."
+      exit
+    when 'CASTLE'
+      puts 'Castling.'
+      # castling function
+    when 'SAVE'
+      puts 'Game has been saved.'
+      # save function
+    when 'LOAD'
+      puts 'Previous save has been loaded.'
+      # load function
+    end
+  end
+  # player_input submethods
+##########################################
+
+
+##########################################
+  # valid_input? submethods
+  def separate_coordinates
+    piece = @input[0..1]
+    @row = input_to_row(piece[1])
+    @col = input_to_col(piece[0])
+
+    location = @input[2..3]
+    @row_new = input_to_row(location[1])
+    @col_new = input_to_col(location[0])
+  end
+
+  def didnt_move?
+    [@row, @col] == [@row_new, @col_new]
+  end
+
+  def selected_piece_colour
+    @chess_board.board[@row][@col].colour
+  end
+
+  def selected_piece_type
+    @chess_board.board[@row][@col].class.to_s
+  end
+
+  def destnation_colour
+    @chess_board.board[@row_new][@col_new].colour
+  end
+
+  def legal_moves
+    # check collisions
+    # get move array from Piece subclasses
+    possible_moves = @chess_board.board[@row][@col].possible_moves(@row, @col)
+    possible_moves
+  end
+
+  def move
+    [@row_new, @col_new]
+  end
+
+  def puts_in_check?
+    false
+  end
+
+  def destnation_piece_type
+    @chess_board.board[@row_new][@col_new].class.to_s
   end
 
   def input_to_row(row)
     8 - row.to_i
   end
 
-  def input_to_column(col)
+  def input_to_col(col)
     case col
     when 'A'
       1
@@ -97,93 +232,10 @@ class Chess
       8
     end
   end
+  # valid_input? submethods
+##########################################
 
-  def piece_colour(row, col)
-    @piece_colour = @chess_board.board[row][col].colour
-  end
-
-  def piece_type(row, col)
-    @piece_type = @chess_board.board[row][col].class.to_s
-  end
-
-  def select_location
-    puts "#{@piece_type} selected. Place selected piece"
-  end
-
-  def check_for_command(command)
-    case command
-    when 'EXIT'
-      exit
-    when 'DRAW'
-      exit
-    when 'CASTLE'
-      puts 'castling'
-      true
-      # castling function
-    when 'SAVE'
-      puts 'saving game'
-      true
-      # save function
-    when 'LOAD'
-      puts 'loading game'
-      true
-      # load function
-    end
-  end
-
-  def move_piece(location)
-    new_pos = input_to_row_column(@location[1], @location[0])
-    update_board(@current_pos, new_pos)
-  end
-
-  def update_board(row, col, row_new, col_new)
-    # Moves piece to new location
-    @chess_board.board[row_new][col_new] = @chess_board.board[row][col]
-    # Replaces old location with a blank
-    @chess_board.board[row][col] = Piece.new(@chess_board.blank)
-  end
-
-  def log_move
-    #update log
-    @chess_board.log += "#{@log1} #{@log2},"
-    @log = @chess_board.log
-  end
-
-  def welcome_message
-    puts 'Welcome Chess!'
-    puts "Please use explicit syntax to move pieces.\n\n"
-    puts "First select the piece you would like to move eg. 'a2'"
-    puts "Then when prompted select where you would like to move that piece eg. 'a4'\n\n"
-    puts "You can save, load, or exit your game by typing 'save', 'load', or 'exit'"
-    puts "You can also propose a draw by entering 'draw'."
-    puts 'Good luck!'
-  end
-
-  def clear_display
-    # system('clear') || system('clc')
-  end
-
-  def display_board
-    @chess_board.display
-  end
-
-  def change_player
-    @player_turn = @player_turn == Board::W ? Board::B : Board::W
-  end
-
-  def game
-    clear_display
-    welcome_message
-    display_board
-    loop do
-      puts "log:#{@log}"
-      user_input
-      change_player
-      clear_display
-      display_board
-    end
-  end
 end
 
 chess_game = Chess.new
-chess_game.game
+chess_game.play_game
