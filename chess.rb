@@ -192,11 +192,17 @@ class Chess
   def legal_moves
     # check collisions
     # get move array from Piece subclasses
+    puts "valid moves:"
     possible_moves = @chess_board.board[@row][@col].possible_moves(@row, @col)
+    print possible_moves
     possible_moves
+
   end
 
   def move
+    puts ""
+    print "move: #{[@row_new, @col_new]}"
+    puts ""
     [@row_new, @col_new]
   end
 
