@@ -48,11 +48,36 @@ end
 
 class Bishop < Piece
   def possible_moves(row, col)
-    # diagonal /
+    # diagonal / row + and col +/ row - and col -
+    diagonal_first = []
+    until col > 8
+      diagonal_first << [row, col]
+      row += 1
+      col += 1
+    end
 
+    until col < 1
+      diagonal_first << [row, col]
+      row -= 1
+      col -= 1
+    end
 
     #diagonal \
 
+    #BUGGED BUGGED BUGGED
+    diagonal_second = []
+    until col > 8
+      diagonal_second << [row, col]
+      row -= 1
+      col += 1
+    end
+
+    until col < 1
+      diagonal_second << [row, col]
+      row += 1
+      col -= 1
+    end
+    valid_moves = diagonal_first + diagonal_second
   end
 end
 
@@ -74,6 +99,6 @@ class Rook < Piece
       c += 1
     end
 
-    valid_moves = horizontal_moves + vertical_moves
+    valid_moves = (horizontal_moves + vertical_moves)
   end
 end
