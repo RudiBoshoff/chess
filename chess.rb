@@ -26,7 +26,25 @@ class Chess
 ##########################################
   # game_over? submethods
   def check?
-    false
+    return false
+    # get king position
+    # king_position = scan_board
+    # check king position against valid moves
+  end
+
+  def scan_board
+    row = 0
+    until row > 7
+      col = 1
+      until col > 8
+        if @chess_board.board[row][col].class.to_s == "King" &&
+           @chess_board.board[row][col].colour != @player_turn
+          return [row, col]
+        end
+        col += 1
+      end
+      row += 1
+    end
   end
 
   def mate?
@@ -188,29 +206,14 @@ class Chess
   end
 
   def legal_moves
-     moves = simplify_paths(possible_moves)
-     print "moves: #{moves}"
+     moves = possible_moves
+     # valid_moves(moves)
+     print "moves: #{moves}\n\n"
      moves
   end
 
   def possible_moves
-    @chess_board.board[@row][@col].possible_moves(@row, @col)
-  end
-
-  def simplify_paths(possible_moves)
-    possible_moves.uniq.delete_if{|coordinate|
-       coordinate == [@row, @col] ||
-       coordinate[1] > 8 || coordinate[1] < 1 ||
-       coordinate[0] < 0 || coordinate[0] > 7
-    }.sort!
-  end
-
-  def collision(possible_moves)
-
-
-
-
-
+    @chess_board.board[@row][@col].possible_moves(@row, @col,@chess_board.board)
   end
 
   def move
