@@ -75,7 +75,6 @@ class Chess
         input
         if coordinates?
           if valid_move?
-            puts "move valid"
             update_board
             valid = true
           else
@@ -120,7 +119,6 @@ class Chess
   end
 
   def update_board
-    puts "updating board"
     move_piece
     remove_piece
   end
@@ -190,19 +188,32 @@ class Chess
   end
 
   def legal_moves
-    # check collisions
-    # get move array from Piece subclasses
-    puts "valid moves:"
-    possible_moves = @chess_board.board[@row][@col].possible_moves(@row, @col)
-    print possible_moves
-    possible_moves
+     moves = simplify_paths(possible_moves)
+     print "moves: #{moves}"
+     moves
+  end
+
+  def possible_moves
+    @chess_board.board[@row][@col].possible_moves(@row, @col)
+  end
+
+  def simplify_paths(possible_moves)
+    possible_moves.uniq.delete_if{|coordinate|
+       coordinate == [@row, @col] ||
+       coordinate[1] > 8 || coordinate[1] < 1 ||
+       coordinate[0] < 0 || coordinate[0] > 7
+    }.sort!
+  end
+
+  def collision(possible_moves)
+
+
+
+
 
   end
 
   def move
-    puts ""
-    print "move: #{[@row_new, @col_new]}"
-    puts ""
     [@row_new, @col_new]
   end
 
