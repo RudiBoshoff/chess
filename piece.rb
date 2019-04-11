@@ -43,39 +43,101 @@ class King < Piece
 end
 
 class Queen < Piece
+  def possible_moves(row, col)
+    # diagonal /
+    r = row
+    c = col
+    diagonal_first = []
+    until c > 8
+      diagonal_first << [r, c]
+      r += 1
+      c += 1
+    end
 
+    r = row
+    c = col
+    until c < 1
+      diagonal_first << [r, c]
+      r -= 1
+      c -= 1
+    end
+
+    #diagonal \
+    r = row
+    c = col
+    diagonal_second = []
+    until c > 8
+      diagonal_second << [r, c]
+      r -= 1
+      c += 1
+    end
+
+    r = row
+    c = col
+
+    until c < 1
+      diagonal_second << [r, c]
+      r += 1
+      c -= 1
+    end
+
+    # vertically
+    r = 0
+    vertical_moves = []
+    until r > 7
+      vertical_moves << [r, col]
+      r += 1
+    end
+
+    #horizontally
+    c = 1
+    horizontal_moves = []
+    until c > 8
+      horizontal_moves << [row, c]
+      c += 1
+    end
+
+    valid_moves = horizontal_moves + vertical_moves + diagonal_first + diagonal_second
+  end
 end
 
 class Bishop < Piece
   def possible_moves(row, col)
-    # diagonal / row + and col +/ row - and col -
+    # diagonal /
+    r = row
+    c = col
     diagonal_first = []
-    until col > 8
-      diagonal_first << [row, col]
-      row += 1
-      col += 1
+    until c > 8
+      diagonal_first << [r, c]
+      r += 1
+      c += 1
     end
 
-    until col < 1
-      diagonal_first << [row, col]
-      row -= 1
-      col -= 1
+    r = row
+    c = col
+    until c < 1
+      diagonal_first << [r, c]
+      r -= 1
+      c -= 1
     end
 
     #diagonal \
-
-    #BUGGED BUGGED BUGGED
+    r = row
+    c = col
     diagonal_second = []
-    until col > 8
-      diagonal_second << [row, col]
-      row -= 1
-      col += 1
+    until c > 8
+      diagonal_second << [r, c]
+      r -= 1
+      c += 1
     end
 
-    until col < 1
-      diagonal_second << [row, col]
-      row += 1
-      col -= 1
+    r = row
+    c = col
+
+    until c < 1
+      diagonal_second << [r, c]
+      r += 1
+      c -= 1
     end
     valid_moves = diagonal_first + diagonal_second
   end
@@ -99,6 +161,6 @@ class Rook < Piece
       c += 1
     end
 
-    valid_moves = (horizontal_moves + vertical_moves)
+    valid_moves = horizontal_moves + vertical_moves
   end
 end
