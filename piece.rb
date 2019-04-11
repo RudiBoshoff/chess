@@ -5,10 +5,18 @@ class Piece
     @colour = colour
     @appearance = appearance
   end
+
+  def simplify_moves(row, col, moves)
+    moves.uniq.delete_if{|coordinate|
+       coordinate == [row, col] ||
+       coordinate[1] > 8 || coordinate[1] < 1 ||
+       coordinate[0] < 0 || coordinate[0] > 7
+    }.sort!
+  end
 end
 
 class Pawn < Piece
-  def possible_moves(row, col)
+  def possible_moves(row, col, board)
     first_move = []
 
     if self.colour == 'white'
@@ -16,34 +24,39 @@ class Pawn < Piece
       first_move << [row - 2, col]
       # normal moves
       next_row = row - 1
-      valid_moves = [[next_row, col -1],[next_row, col],[next_row, col + 1]]
+      moves = [[next_row, col -1],[next_row, col],[next_row, col + 1]]
     else
       # pawn first move
       first_move << [row + 2, col]
       # normal moves
       next_row = row + 1
-      valid_moves = [[next_row, col -1],[next_row, col],[next_row, col + 1]]
+      moves = [[next_row, col -1],[next_row, col],[next_row, col + 1]]
     end
-    valid_moves = first_move + valid_moves
+    moves = first_move + moves
+    moves = simplify_moves(row, col, moves)
   end
 end
 
 class Knight < Piece
-  def possible_moves(row, col)
-    valid_moves = [[row + 2, col + 1],[row + 1, col + 2],[row - 1, col + 2],[row - 2, col + 1],
+  def possible_moves(row, col, board)
+    moves = [[row + 2, col + 1],[row + 1, col + 2],[row - 1, col + 2],[row - 2, col + 1],
                   [row - 2, col - 1],[row - 1, col - 2],[row + 1, col - 2],[row + 2, col - 1]]
+
+    moves = simplify_moves(row, col, moves)
   end
 end
 
 class King < Piece
-  def possible_moves(row, col)
-    valid_moves = [[row + 1, col - 1], [row + 1, col],[row + 1, col + 1],[row, col + 1],
+  def possible_moves(row, col, board)
+    moves = [[row + 1, col - 1], [row + 1, col],[row + 1, col + 1],[row, col + 1],
                   [row - 1, col + 1], [row - 1, col],[row - 1, col - 1],[row - 1, col - 1]]
+
+    moves = simplify_moves(row, col, moves)
   end
 end
 
 class Queen < Piece
-  def possible_moves(row, col)
+  def possible_moves(row, col, board)
     # diagonal /
     r = row
     c = col
@@ -97,12 +110,14 @@ class Queen < Piece
       c += 1
     end
 
-    valid_moves = horizontal_moves + vertical_moves + diagonal_first + diagonal_second
+    moves = horizontal_moves + vertical_moves + diagonal_first + diagonal_second
+
+    moves = simplify_moves(row, col, moves)
   end
 end
 
 class Bishop < Piece
-  def possible_moves(row, col)
+  def possible_moves(row, col, board)
     # diagonal /
     r = row
     c = col
@@ -139,28 +154,60 @@ class Bishop < Piece
       r += 1
       c -= 1
     end
-    valid_moves = diagonal_first + diagonal_second
+    moves = diagonal_first + diagonal_second
+
+    moves = simplify_moves(row, col, moves)
   end
 end
 
 class Rook < Piece
-  def possible_moves(row, col)
-    # vertically
-    r = 0
+  def possible_moves(row, col, board)
+    # vertically up
+    r = row
     vertical_moves = []
     until r > 7
+      puts "class: #{board[r][col].class}"
       vertical_moves << [r, col]
       r += 1
+      if board[r][col].class.to_s != "Piece"
+        break
+      end
     end
 
-    #horizontally
-    c = 1
+    # vertically down
+    r = row
+    until r < 0
+      vertical_moves << [r, col]
+      r -= 1
+      if board[r][col].class.to_s != "Piece"
+        break
+      end
+    end
+
+    # horizontally right
+    c = col
     horizontal_moves = []
     until c > 8
       horizontal_moves << [row, c]
       c += 1
+      if board[row][c].class.to_s != "Piece"
+        break
+      end
     end
 
-    valid_moves = horizontal_moves + vertical_moves
+    # horizontally left
+    c = col
+    until c < 1
+      horizontal_moves << [row, c]
+      c -= 1
+        if board[row][c].class.to_s != "Piece"
+          break
+        end
+    end
+
+    moves = horizontal_moves + vertical_moves
+
+    moves = simplify_moves(row, col, moves)
+
   end
 end
