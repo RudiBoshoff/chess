@@ -21,17 +21,28 @@ class Pawn < Piece
 
     if self.colour == 'white'
       # pawn first move
-      first_move << [row - 2, col]
+      if row == 6
+        if board[row - 1][col].class.to_s == "Piece" && board[row - 2][col].class.to_s == "Piece"
+          first_move << [row - 2, col]
+        end
+      end
+
       # normal moves
       next_row = row - 1
       moves = [[next_row, col -1],[next_row, col],[next_row, col + 1]]
     else
       # pawn first move
-      first_move << [row + 2, col]
+      if row == 1
+        if board[row + 1][col].class.to_s == "Piece" && board[row + 2][col].class.to_s == "Piece"
+          first_move << [row + 2, col]
+        end
+      end
+
       # normal moves
       next_row = row + 1
       moves = [[next_row, col -1],[next_row, col],[next_row, col + 1]]
     end
+
     moves = first_move + moves
     moves = simplify_moves(row, col, moves)
   end
@@ -49,7 +60,7 @@ end
 class King < Piece
   def possible_moves(row, col, board)
     moves = [[row + 1, col - 1], [row + 1, col],[row + 1, col + 1],[row, col + 1],
-                  [row - 1, col + 1], [row - 1, col],[row - 1, col - 1],[row - 1, col - 1]]
+                  [row - 1, col + 1], [row - 1, col],[row, col - 1],[row - 1, col - 1]]
 
     moves = simplify_moves(row, col, moves)
   end
@@ -65,6 +76,11 @@ class Queen < Piece
       diagonal_first << [r, c]
       r += 1
       c += 1
+      if r <= 7 && c <= 8
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     r = row
@@ -73,6 +89,11 @@ class Queen < Piece
       diagonal_first << [r, c]
       r -= 1
       c -= 1
+      if r >= 0 && c >= 1
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     #diagonal \
@@ -83,31 +104,74 @@ class Queen < Piece
       diagonal_second << [r, c]
       r -= 1
       c += 1
+      if r >= 0 && c <= 8
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     r = row
     c = col
-
     until c < 1
       diagonal_second << [r, c]
       r += 1
       c -= 1
+      if r <= 7 && c >= 1
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
-    # vertically
-    r = 0
+    # vertically up
+    r = row
     vertical_moves = []
     until r > 7
       vertical_moves << [r, col]
       r += 1
+      if r <= 7
+        if board[r][col].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
-    #horizontally
-    c = 1
+    # vertically down
+    r = row
+    until r < 0
+      vertical_moves << [r, col]
+      r -= 1
+      if r >= 0
+        if board[r][col].class.to_s != "Piece"
+          break
+        end
+      end
+    end
+
+    # horizontally right
+    c = col
     horizontal_moves = []
     until c > 8
       horizontal_moves << [row, c]
       c += 1
+      if c <= 8
+        if board[row][c].class.to_s != "Piece"
+          break
+        end
+      end
+    end
+
+    # horizontally left
+    c = col
+    until c < 1
+      horizontal_moves << [row, c]
+      c -= 1
+      if c >= 1
+        if board[row][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     moves = horizontal_moves + vertical_moves + diagonal_first + diagonal_second
@@ -126,6 +190,11 @@ class Bishop < Piece
       diagonal_first << [r, c]
       r += 1
       c += 1
+      if r <= 7 && c <= 8
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     r = row
@@ -134,6 +203,11 @@ class Bishop < Piece
       diagonal_first << [r, c]
       r -= 1
       c -= 1
+      if r >= 0 && c >= 1
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     #diagonal \
@@ -144,15 +218,24 @@ class Bishop < Piece
       diagonal_second << [r, c]
       r -= 1
       c += 1
+      if r >= 0 && c <= 8
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
 
     r = row
     c = col
-
     until c < 1
       diagonal_second << [r, c]
       r += 1
       c -= 1
+      if r <= 7 && c >= 1
+        if board[r][c].class.to_s != "Piece"
+          break
+        end
+      end
     end
     moves = diagonal_first + diagonal_second
 
@@ -166,11 +249,12 @@ class Rook < Piece
     r = row
     vertical_moves = []
     until r > 7
-      puts "class: #{board[r][col].class}"
       vertical_moves << [r, col]
       r += 1
-      if board[r][col].class.to_s != "Piece"
-        break
+      if r <= 7
+        if board[r][col].class.to_s != "Piece"
+          break
+        end
       end
     end
 
@@ -179,8 +263,10 @@ class Rook < Piece
     until r < 0
       vertical_moves << [r, col]
       r -= 1
-      if board[r][col].class.to_s != "Piece"
-        break
+      if r >= 0
+        if board[r][col].class.to_s != "Piece"
+          break
+        end
       end
     end
 
@@ -190,8 +276,10 @@ class Rook < Piece
     until c > 8
       horizontal_moves << [row, c]
       c += 1
-      if board[row][c].class.to_s != "Piece"
-        break
+      if c <= 8
+        if board[row][c].class.to_s != "Piece"
+          break
+        end
       end
     end
 
@@ -200,9 +288,11 @@ class Rook < Piece
     until c < 1
       horizontal_moves << [row, c]
       c -= 1
+      if c >= 1
         if board[row][c].class.to_s != "Piece"
           break
         end
+      end
     end
 
     moves = horizontal_moves + vertical_moves
