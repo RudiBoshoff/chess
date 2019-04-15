@@ -33,18 +33,18 @@ class Chess
   end
 
   def scan_board
-    row = 0
-    until row > 7
-      col = 1
-      until col > 8
-        if @chess_board.board[row][col].class.to_s == "King" &&
-           @chess_board.board[row][col].colour != @player_turn
-          return [row, col]
-        end
-        col += 1
-      end
-      row += 1
-    end
+    # row = 0
+    # until row > 7
+    #   col = 1
+    #   until col > 8
+    #     if @chess_board.board[row][col].class.to_s == "King" &&
+    #        @chess_board.board[row][col].colour != @player_turn
+    #       return [row, col]
+    #     end
+    #     col += 1
+    #   end
+    #   row += 1
+    # end
   end
 
   def mate?
@@ -207,8 +207,8 @@ class Chess
 
   def legal_moves
      moves = possible_moves
-     # valid_moves(moves)
-     print "moves: #{moves}\n\n"
+     print "\n\npossible moves: #{moves}\n\n"
+     print "\n\nmoves: #{coordinate_to_input(moves)}\n\n"
      moves
   end
 
@@ -254,7 +254,40 @@ class Chess
   end
   # valid_input? submethods
 ##########################################
+  def coordinate_to_input(moves)
+    input_moves = []
+    moves.each do |move|
+      row = move[0]
+      col = move[1]
+      input_moves << col_to_input(col) + row_to_input(row).to_s
+    end
+    return input_moves
+  end
 
+  def row_to_input(row)
+    (row - 8).abs
+  end
+
+  def col_to_input(col)
+    case col
+    when 1
+      'A'
+    when 2
+      'B'
+    when 3
+      'C'
+    when 4
+      'D'
+    when 5
+      'E'
+    when 6
+      'F'
+    when 7
+      'G'
+    when 8
+      'H'
+    end
+  end
 end
 
 chess_game = Chess.new
