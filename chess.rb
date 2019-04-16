@@ -7,6 +7,7 @@ class Chess
     @chess_board.generate
     @chess_board.add_pieces_to_board
     @player_turn = Board::W
+    @check = false
   end
 
   def play_game
@@ -15,7 +16,6 @@ class Chess
 
   def game_over?
     if check?
-      puts "#{@player_turn} is in check"
       true if mate?
     elsif stalemate? || draw?
       true
@@ -25,11 +25,7 @@ class Chess
   ##########################################
   # game_over? submethods
   def check?
-    if scan_for_check
-      true
-    else
-      false
-    end
+    @check
   end
 
   def find_king
@@ -49,6 +45,7 @@ class Chess
   end
 
   def scan_for_check
+    @check = false
     player_moves = []
     r = 0
     while r <= 7
@@ -68,10 +65,14 @@ class Chess
     # print "enemy" +  king_location.to_s
     player_moves.each do |piece_moves|
       if piece_moves.include?(king_location)
-        return true
+        @check = true
       end
     end
-    false
+
+    if @check == true
+      puts "Player in check"
+    end
+
   end
 
   def mate?
@@ -92,6 +93,8 @@ class Chess
     clear_display
     welcome_message
     display_board
+    scan_for_check
+
     player_input
     change_player
   end
@@ -157,10 +160,7 @@ class Chess
     return false unless selected_piece_colour == @player_turn
     return false if destnation_colour == @player_turn
     return false unless legal_moves.include?(move)
-
-    false if puts_in_check?
     return false if destnation_piece_type == 'King'
-
     true
   end
 
@@ -235,7 +235,6 @@ class Chess
 
   def legal_moves
     possible_moves
-    # print "valid moves: #{coordinate_to_input(moves)}\n\n"
   end
 
   def possible_moves(row = @row, col = @col)
@@ -244,10 +243,6 @@ class Chess
 
   def move
     [@row_new, @col_new]
-  end
-
-  def puts_in_check?
-    false
   end
 
   def destnation_piece_type
@@ -286,7 +281,7 @@ class Chess
     moves.each do |move|
       row = move[0]
       col = move[1]
-      input_moves << col_to_input(col) + row_to_input(row).to_s
+      input_moves << col_to_input(col).to_s + row_to_input(row).to_s
     end
     input_moves
   end
