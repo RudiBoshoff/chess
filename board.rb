@@ -38,7 +38,7 @@ class Board
 
     # Creates labels for board
     @board.each_with_index do |_, index|
-      @board[index][0] = Piece.new((@board.size - index).to_s + '  ')
+      @board[index][0] = Piece.new('   ' + (@board.size - index).to_s + '  ')
     end
   end
 
@@ -50,14 +50,15 @@ class Board
 
     # Displays labels
     labels = %w[A B C D E F G H]
-    labels.unshift ' '
+    labels.unshift '     '
     puts labels.map { |i| i.to_s.rjust(2) }.join
+    puts "\n"
   end
 
   def add_pieces_to_board
     # Adds pawns to board
     col = 1
-    while col < 9
+    while col <= 8
       @board[1][col] = Pawn.new(@b_pawn, B)
       @board[6][col] = Pawn.new(@w_pawn, W)
       col += 1
