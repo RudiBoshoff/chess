@@ -15,36 +15,63 @@ class Chess
 
   def game_over?
     if check?
-      if mate?
-        true
-      end
+      puts "#{@player_turn} is in check"
+      true if mate?
     elsif stalemate? || draw?
       true
     end
   end
 
-##########################################
+  ##########################################
   # game_over? submethods
   def check?
-    return false
-    # get king position
-    # king_position = scan_board
-    # check king position against valid moves
+    if scan_for_check
+      true
+    else
+      false
+    end
   end
 
-  def scan_board
-    # row = 0
-    # until row > 7
-    #   col = 1
-    #   until col > 8
-    #     if @chess_board.board[row][col].class.to_s == "King" &&
-    #        @chess_board.board[row][col].colour != @player_turn
-    #       return [row, col]
-    #     end
-    #     col += 1
-    #   end
-    #   row += 1
-    # end
+  def find_king
+    # looks for opponent king
+    row = 0
+    while row <= 7
+      col = 1
+      while col <= 8
+        if @chess_board.board[row][col].class.to_s == 'King' &&
+           @chess_board.board[row][col].colour == @player_turn
+          return [row, col]
+        end
+        col += 1
+      end
+      row += 1
+    end
+  end
+
+  def scan_for_check
+    player_moves = []
+    r = 0
+    while r <= 7
+      c = 1
+      while c <= 8
+        if selected_piece_type(r, c) != 'Piece' && selected_piece_colour(r, c) != @player_turn && selected_piece_type(r, c) != 'King'
+          player_moves << possible_moves(r, c)
+          # print possible_moves(r, c)
+          # puts selected_piece_type(r, c)
+        end
+        c += 1
+      end
+      r += 1
+    end
+
+    king_location = find_king
+    # print "enemy" +  king_location.to_s
+    player_moves.each do |piece_moves|
+      if piece_moves.include?(king_location)
+        return true
+      end
+    end
+    false
   end
 
   def mate?
@@ -59,7 +86,7 @@ class Chess
     false
   end
   # game_over? submethods
-##########################################
+  ##########################################
 
   def take_turn
     clear_display
@@ -69,18 +96,19 @@ class Chess
     change_player
   end
 
-##########################################
+  ##########################################
   # take_turn submethods
   def clear_display
-    # system('clear') || system('clc')
+    system('clear') || system('clc')
   end
 
   def welcome_message
-    # puts 'Welcome Chess!'
-    # puts "Please use explicit syntax to move pieces.\n\n"
-    # puts "You can save, load, or exit your game by typing 'save', 'load', or 'exit'"
-    # puts "You can also propose a draw by entering 'draw'."
-    # puts 'Good luck!'
+    puts 'Welcome to Chess!'
+    puts 'Please use explicit syntax to move pieces.'
+    puts "Typing A2A4 will move the piece at A2' to A4"
+    puts "You can save, load, or exit your game by typing 'save', 'load', or 'exit'"
+    puts "You can also propose a draw by entering 'draw'."
+    puts 'Good luck!'
   end
 
   def display_board
@@ -90,19 +118,19 @@ class Chess
   def player_input
     valid = false
     until valid
-        input
-        if coordinates?
-          if valid_move?
-            update_board
-            valid = true
-          else
-            valid = false
-          end
-        elsif command?
-          execute_command
+      input
+      if coordinates?
+        if valid_move?
+          update_board
+          valid = true
         else
           valid = false
         end
+      elsif command?
+        execute_command
+      else
+        valid = false
+      end
       end
   end
 
@@ -110,11 +138,9 @@ class Chess
     @player_turn = @player_turn == Board::W ? Board::B : Board::W
   end
   # take_turn submethods
-##########################################
+  ##########################################
 
-
-
-##########################################
+  ##########################################
   # player_input submethods
   def input
     puts "It's #{@player_turn}'s turn. Please enter your move/ command."
@@ -131,8 +157,10 @@ class Chess
     return false unless selected_piece_colour == @player_turn
     return false if destnation_colour == @player_turn
     return false unless legal_moves.include?(move)
+
     false if puts_in_check?
-    return false if destnation_piece_type == "King"
+    return false if destnation_piece_type == 'King'
+
     true
   end
 
@@ -150,14 +178,14 @@ class Chess
   end
 
   def command?
-    command = ['EXIT','DRAW','LOAD','SAVE','CASTLE']
+    command = %w[EXIT DRAW LOAD SAVE CASTLE]
     true if command.include? @input
   end
 
   def execute_command
     case @input
     when 'EXIT'
-      puts "Exiting game..."
+      puts 'Exiting game...'
       exit
     when 'DRAW'
       puts "It's a draw. Exiting game..."
@@ -165,6 +193,7 @@ class Chess
     when 'CASTLE'
       puts 'Castling.'
       # castling function
+      change_player
     when 'SAVE'
       puts 'Game has been saved.'
       # save function
@@ -174,10 +203,9 @@ class Chess
     end
   end
   # player_input submethods
-##########################################
+  ##########################################
 
-
-##########################################
+  ##########################################
   # valid_input? submethods
   def separate_coordinates
     piece = @input[0..1]
@@ -193,12 +221,12 @@ class Chess
     [@row, @col] == [@row_new, @col_new]
   end
 
-  def selected_piece_colour
-    @chess_board.board[@row][@col].colour
+  def selected_piece_colour(row = @row, col = @col)
+    @chess_board.board[row][col].colour
   end
 
-  def selected_piece_type
-    @chess_board.board[@row][@col].class.to_s
+  def selected_piece_type(row = @row, col = @col)
+    @chess_board.board[row][col].class.to_s
   end
 
   def destnation_colour
@@ -206,14 +234,12 @@ class Chess
   end
 
   def legal_moves
-     moves = possible_moves
-     print "\n\npossible moves: #{moves}\n\n"
-     print "\n\nmoves: #{coordinate_to_input(moves)}\n\n"
-     moves
+    possible_moves
+    # print "valid moves: #{coordinate_to_input(moves)}\n\n"
   end
 
-  def possible_moves
-    @chess_board.board[@row][@col].possible_moves(@row, @col,@chess_board.board)
+  def possible_moves(row = @row, col = @col)
+    @chess_board.board[row][col].possible_moves(row, col, @chess_board.board)
   end
 
   def move
@@ -252,8 +278,9 @@ class Chess
       8
     end
   end
+
   # valid_input? submethods
-##########################################
+  ##########################################
   def coordinate_to_input(moves)
     input_moves = []
     moves.each do |move|
@@ -261,7 +288,7 @@ class Chess
       col = move[1]
       input_moves << col_to_input(col) + row_to_input(row).to_s
     end
-    return input_moves
+    input_moves
   end
 
   def row_to_input(row)
