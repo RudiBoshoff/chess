@@ -7,8 +7,8 @@ class Chess
     @chess_board.generate
     @chess_board.add_pieces_to_board
     @player_turn = Board::W
-    @white_check = false
-    @black_check = false
+    @white_in_check = false
+    @black_in_check = false
   end
 
   def play_game
@@ -17,7 +17,6 @@ class Chess
 
   def game_over?
     if check?
-      puts 'check'
       if mate?
         puts 'checkmate'
         return true
@@ -30,7 +29,7 @@ class Chess
   ##########################################
   # game_over? submethods
   def check?
-    if @white_check || @black_check
+    if @white_in_check || @black_in_check
       true
     else
       false
@@ -57,79 +56,102 @@ class Chess
   end
 
   def scan_for_check
+    # determine each pieces' moves
+    scan_moves
+
+    # locate the kings
+    find_kings
+
+    # white in check?
+    white_in_check
+
+    # black in check?
+    black_in_check
+  end
+
+  def scan_moves
     @white_moves = []
     @black_moves = []
+
     r = 0
     while r <= 7
       c = 1
       while c <= 8
-        if selected_piece_type(r, c) != 'Piece' && selected_piece_colour(r, c) == Board::B && selected_piece_type(r, c) != 'King'
-          @black_moves << possible_moves(r, c)
-          # print "black moves: #{possible_moves(r, c)}"
-          # puts selected_piece_type(r, c)
-        end
-
-        if selected_piece_type(r, c) != 'Piece' && selected_piece_colour(r, c) == Board::W && selected_piece_type(r, c) != 'King'
-          @white_moves << possible_moves(r, c)
-          # print "white moves: #{possible_moves(r, c)}"
-          # puts selected_piece_type(r, c)
+        if selected_piece_type(r, c) != 'Piece' && selected_piece_type(r, c) != 'King'
+          if selected_piece_colour(r, c) == Board::B
+            @black_moves << possible_moves(r, c)
+          elsif selected_piece_colour(r, c) == Board::W
+            @white_moves << possible_moves(r, c)
+          end
         end
         c += 1
       end
       r += 1
     end
+  end
 
-    find_kings
+  def white_in_check
+    @white_in_check = false
 
     @black_moves.each do |moves|
       if moves.include?(@white_king)
-        @white_check = true
+        @white_in_check = true
         puts "#{selected_piece_colour(@white_king[0], @white_king[1]).capitalize} is in check!"
       end
     end
+  end
+
+  def black_in_check
+    @black_in_check = false
 
     @white_moves.each do |moves|
       if moves.include?(@black_king)
-        @black_check = true
+        @black_in_check = true
         puts "#{selected_piece_colour(@black_king[0], @black_king[1]).capitalize} is in check!"
       end
     end
   end
 
   def scan_for_mate
-    # if @white_check
-    #   checkmate = []
-    #   king_moves = possible_moves(@white_king[0], @white_king[1])
-    #   king_moves.each do |move|
-    #     checkmate << if @black_moves.include?(move)
-    #                    true
-    #                  else
-    #                    false
-    #                  end
-    #   end
-    #
-    #   if checkmate.all? { |result| result == true }
-    #     puts 'checkmate'
-    #     @checkmate = true
-    #   end
-    # end
-    #
-    # if @black_check
-    #   checkmate = []
-    #   king_moves = possible_moves(@black_king[0], @black_king[1])
-    #   king_moves.each do |move|
-    #     checkmate << if @white_moves.include?(move)
-    #                    true
-    #                  else
-    #                    false
-    #                  end
-    #   end
-    #
-    #   if checkmate.all? { |result| result == true }
-    #     puts 'checkmate'
-    #     @checkmate = true
-    #   end
-    # end
+    if @white_in_check
+      checkmate = []
+      king_moves = possible_moves(@white_king[0], @white_king[1])
+
+      king_moves.each do |move|
+        list_of_moves = @black_moves.flatten(1)
+          checkmate << if list_of_moves.include?(move)
+                         true
+                       else
+                         false
+                       end
+      end
+
+      if checkmate.all? { |result| result == true }
+        puts 'Checkmate! Black is the winner.'
+        @checkmate = true
+        return true
+      end
+    elsif @black_in_check
+      checkmate = []
+      king_moves = possible_moves(@black_king[0], @black_king[1])
+
+      king_moves.each do |move|
+        list_of_moves = @white_moves.flatten(1)
+          checkmate << if list_of_moves.include?(move)
+                         true
+                       else
+                         false
+                       end
+      end
+
+      if checkmate.all? { |result| result == true }
+        puts 'Checkmate! White is the winner.'
+        @checkmate = true
+        return true
+      end
+    else
+      false
+    end
   end
 
   def mate?
@@ -150,8 +172,9 @@ class Chess
     clear_display
     welcome_message
     display_board
-    scan_for_check
     scan_for_mate
+    exit if @checkmate
+    scan_for_check
     player_input
     change_player
   end
@@ -159,7 +182,7 @@ class Chess
   ##########################################
   # take_turn submethods
   def clear_display
-    # system('clear') || system('clc')
+    system('clear') || system('clc')
   end
 
   def welcome_message
@@ -175,24 +198,43 @@ class Chess
     @chess_board.display
   end
 
+  def player_in_check?
+    if @player_turn == Board::W && @white_in_check
+      true
+    elsif @player_turn == Board::B && @black_in_check
+      true
+    else
+      false
+    end
+  end
+
   def player_input
     valid = false
     until valid
       input
       if coordinates?
         if valid_move?
-          update_board
-          scan_for_check
-          if @player_turn == Board::W && @white_check
-            rollback_update
-            @white_check = false
-            valid = false
-          elsif @player_turn == Board::B && @black_check
-            rollback_update
-            @black_check = false
-            valid = false
+          if player_in_check?
+            unless scan_for_mate
+              update_board
+              scan_for_check
+                if player_in_check?
+                  backtrack_board
+                  valid = false
+                else
+                  valid = true
+                end
+            end
           else
-            valid = true
+            update_board
+            scan_for_check
+            if player_in_check?
+              puts "That will put you in check!"
+              backtrack_board
+              valid = false
+            else
+              valid = true
+            end
           end
         else
           valid = false
@@ -229,19 +271,17 @@ class Chess
     return false if destination_colour == @player_turn
     return false unless legal_moves.include?(move)
     return false if destination_piece_type == 'King'
-
     true
   end
 
   def update_board
+    @backtrack_board = @chess_board.board
     move_piece
     remove_piece
   end
 
-  def rollback_update
-    puts 'That will put you in check'
-    @chess_board.board[@row][@col] = @chess_board.board[@row_new][@col_new]
-    @chess_board.board[@row_new][@col_new] = @old_piece
+  def backtrack_board
+    @chess_board.board = @backtrack_board
   end
 
   def move_piece
