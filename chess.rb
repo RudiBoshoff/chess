@@ -7,7 +7,8 @@ class Chess
     @chess_board.generate
     @chess_board.add_pieces_to_board
     @player_turn = Board::W
-    @check = false
+    @white_check = false
+    @black_check = false
   end
 
   def play_game
@@ -16,7 +17,11 @@ class Chess
 
   def game_over?
     if check?
-      true if mate?
+      puts 'check'
+      if mate?
+        puts 'checkmate'
+        return true
+      end
     elsif stalemate? || draw?
       true
     end
@@ -25,18 +30,25 @@ class Chess
   ##########################################
   # game_over? submethods
   def check?
-    @check
+    if @white_check || @black_check
+      true
+    else
+      false
+    end
   end
 
-  def find_king
-    # looks for opponent king
+  def find_kings
+    # looks for king locations
     row = 0
     while row <= 7
       col = 1
       while col <= 8
-        if @chess_board.board[row][col].class.to_s == 'King' &&
-           @chess_board.board[row][col].colour == @player_turn
-          return [row, col]
+        if selected_piece_type(row, col) == 'King'
+          if selected_piece_colour(row, col) == Board::W
+            @white_king = [row, col]
+          elsif selected_piece_colour(row, col) == Board::B
+            @black_king = [row, col]
+          end
         end
         col += 1
       end
@@ -45,15 +57,21 @@ class Chess
   end
 
   def scan_for_check
-    @check = false
-    player_moves = []
+    @white_moves = []
+    @black_moves = []
     r = 0
     while r <= 7
       c = 1
       while c <= 8
-        if selected_piece_type(r, c) != 'Piece' && selected_piece_colour(r, c) != @player_turn && selected_piece_type(r, c) != 'King'
-          player_moves << possible_moves(r, c)
-          # print possible_moves(r, c)
+        if selected_piece_type(r, c) != 'Piece' && selected_piece_colour(r, c) == Board::B && selected_piece_type(r, c) != 'King'
+          @black_moves << possible_moves(r, c)
+          # print "black moves: #{possible_moves(r, c)}"
+          # puts selected_piece_type(r, c)
+        end
+
+        if selected_piece_type(r, c) != 'Piece' && selected_piece_colour(r, c) == Board::W && selected_piece_type(r, c) != 'King'
+          @white_moves << possible_moves(r, c)
+          # print "white moves: #{possible_moves(r, c)}"
           # puts selected_piece_type(r, c)
         end
         c += 1
@@ -61,22 +79,61 @@ class Chess
       r += 1
     end
 
-    king_location = find_king
-    # print "enemy" +  king_location.to_s
-    player_moves.each do |piece_moves|
-      if piece_moves.include?(king_location)
-        @check = true
+    find_kings
+
+    @black_moves.each do |moves|
+      if moves.include?(@white_king)
+        @white_check = true
+        puts "#{selected_piece_colour(@white_king[0], @white_king[1]).capitalize} is in check!"
       end
     end
 
-    if @check == true
-      puts "Player in check"
+    @white_moves.each do |moves|
+      if moves.include?(@black_king)
+        @black_check = true
+        puts "#{selected_piece_colour(@black_king[0], @black_king[1]).capitalize} is in check!"
+      end
     end
+  end
 
+  def scan_for_mate
+    # if @white_check
+    #   checkmate = []
+    #   king_moves = possible_moves(@white_king[0], @white_king[1])
+    #   king_moves.each do |move|
+    #     checkmate << if @black_moves.include?(move)
+    #                    true
+    #                  else
+    #                    false
+    #                  end
+    #   end
+    #
+    #   if checkmate.all? { |result| result == true }
+    #     puts 'checkmate'
+    #     @checkmate = true
+    #   end
+    # end
+    #
+    # if @black_check
+    #   checkmate = []
+    #   king_moves = possible_moves(@black_king[0], @black_king[1])
+    #   king_moves.each do |move|
+    #     checkmate << if @white_moves.include?(move)
+    #                    true
+    #                  else
+    #                    false
+    #                  end
+    #   end
+    #
+    #   if checkmate.all? { |result| result == true }
+    #     puts 'checkmate'
+    #     @checkmate = true
+    #   end
+    # end
   end
 
   def mate?
-    false
+    @checkmate
   end
 
   def stalemate?
@@ -94,7 +151,7 @@ class Chess
     welcome_message
     display_board
     scan_for_check
-
+    scan_for_mate
     player_input
     change_player
   end
@@ -102,7 +159,7 @@ class Chess
   ##########################################
   # take_turn submethods
   def clear_display
-    system('clear') || system('clc')
+    # system('clear') || system('clc')
   end
 
   def welcome_message
@@ -125,7 +182,18 @@ class Chess
       if coordinates?
         if valid_move?
           update_board
-          valid = true
+          scan_for_check
+          if @player_turn == Board::W && @white_check
+            rollback_update
+            @white_check = false
+            valid = false
+          elsif @player_turn == Board::B && @black_check
+            rollback_update
+            @black_check = false
+            valid = false
+          else
+            valid = true
+          end
         else
           valid = false
         end
@@ -134,7 +202,7 @@ class Chess
       else
         valid = false
       end
-      end
+    end
   end
 
   def change_player
@@ -146,7 +214,7 @@ class Chess
   ##########################################
   # player_input submethods
   def input
-    puts "It's #{@player_turn}'s turn. Please enter your move/ command."
+    puts "It's #{@player_turn.capitalize}'s turn. Please enter your move/ command."
     @input = gets.chomp.upcase
   end
 
@@ -158,9 +226,10 @@ class Chess
     separate_coordinates
     return false if didnt_move?
     return false unless selected_piece_colour == @player_turn
-    return false if destnation_colour == @player_turn
+    return false if destination_colour == @player_turn
     return false unless legal_moves.include?(move)
-    return false if destnation_piece_type == 'King'
+    return false if destination_piece_type == 'King'
+
     true
   end
 
@@ -169,7 +238,14 @@ class Chess
     remove_piece
   end
 
+  def rollback_update
+    puts 'That will put you in check'
+    @chess_board.board[@row][@col] = @chess_board.board[@row_new][@col_new]
+    @chess_board.board[@row_new][@col_new] = @old_piece
+  end
+
   def move_piece
+    @old_piece = @chess_board.board[@row_new][@col_new]
     @chess_board.board[@row_new][@col_new] = @chess_board.board[@row][@col]
   end
 
@@ -229,7 +305,7 @@ class Chess
     @chess_board.board[row][col].class.to_s
   end
 
-  def destnation_colour
+  def destination_colour
     @chess_board.board[@row_new][@col_new].colour
   end
 
@@ -245,7 +321,7 @@ class Chess
     [@row_new, @col_new]
   end
 
-  def destnation_piece_type
+  def destination_piece_type
     @chess_board.board[@row_new][@col_new].class.to_s
   end
 
@@ -276,40 +352,6 @@ class Chess
 
   # valid_input? submethods
   ##########################################
-  def coordinate_to_input(moves)
-    input_moves = []
-    moves.each do |move|
-      row = move[0]
-      col = move[1]
-      input_moves << col_to_input(col).to_s + row_to_input(row).to_s
-    end
-    input_moves
-  end
-
-  def row_to_input(row)
-    (row - 8).abs
-  end
-
-  def col_to_input(col)
-    case col
-    when 1
-      'A'
-    when 2
-      'B'
-    when 3
-      'C'
-    when 4
-      'D'
-    when 5
-      'E'
-    when 6
-      'F'
-    when 7
-      'G'
-    when 8
-      'H'
-    end
-  end
 end
 
 chess_game = Chess.new
