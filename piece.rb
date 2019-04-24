@@ -91,7 +91,8 @@ class Queen < Piece
       c += 1
       next unless r <= 7 && c <= 8
 
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -104,8 +105,8 @@ class Queen < Piece
       r -= 1
       c -= 1
       next unless r >= 0 && c >= 1
-
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -120,8 +121,8 @@ class Queen < Piece
       r -= 1
       c += 1
       next unless r >= 0 && c <= 8
-
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -135,7 +136,8 @@ class Queen < Piece
       c -= 1
       next unless r <= 7 && c >= 1
 
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -150,7 +152,8 @@ class Queen < Piece
       r += 1
       next unless r <= 7
 
-      if board[r][col].class.to_s != 'Piece'
+      piece_type = board[r][col].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         vertical_moves << [r, col]
         break
       end
@@ -163,7 +166,8 @@ class Queen < Piece
       r -= 1
       next unless r >= 0
 
-      if board[r][col].class.to_s != 'Piece'
+      piece_type = board[r][col].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         vertical_moves << [r, col]
         break
       end
@@ -177,7 +181,8 @@ class Queen < Piece
       c += 1
       next unless c <= 8
 
-      if board[row][c].class.to_s != 'Piece'
+      piece_type = board[row][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         horizontal_moves << [row, c]
         break
       end
@@ -190,7 +195,8 @@ class Queen < Piece
       c -= 1
       next unless c >= 1
 
-      if board[row][c].class.to_s != 'Piece'
+      piece_type = board[row][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         horizontal_moves << [row, c]
         break
       end
@@ -214,7 +220,8 @@ class Bishop < Piece
       c += 1
       next unless r <= 7 && c <= 8
 
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -228,7 +235,8 @@ class Bishop < Piece
       c -= 1
       next unless r >= 0 && c >= 1
 
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -244,7 +252,8 @@ class Bishop < Piece
       c += 1
       next unless r >= 0 && c <= 8
 
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -258,7 +267,8 @@ class Bishop < Piece
       c -= 1
       next unless r <= 7 && c >= 1
 
-      if board[r][c].class.to_s != 'Piece'
+      piece_type = board[r][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
         break
       end
@@ -280,7 +290,8 @@ class Rook < Piece
       r += 1
       next unless r <= 7
 
-      if board[r][col].class.to_s != 'Piece'
+      piece_type = board[r][col].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         vertical_moves << [r, col]
         break
       end
@@ -293,7 +304,8 @@ class Rook < Piece
       r -= 1
       next unless r >= 0
 
-      if board[r][col].class.to_s != 'Piece'
+      piece_type = board[r][col].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         vertical_moves << [r, col]
         break
       end
@@ -307,7 +319,8 @@ class Rook < Piece
       c += 1
       next unless c <= 8
 
-      if board[row][c].class.to_s != 'Piece'
+      piece_type = board[row][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         horizontal_moves << [row, c]
         break
       end
@@ -320,7 +333,8 @@ class Rook < Piece
       c -= 1
       next unless c >= 1
 
-      if board[row][c].class.to_s != 'Piece'
+      piece_type = board[row][c].class.to_s
+      if piece_type != 'Piece' && piece_type != 'King'
         horizontal_moves << [row, c]
         break
       end
