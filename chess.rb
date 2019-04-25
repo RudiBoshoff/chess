@@ -16,20 +16,108 @@ class Chess
   end
 
   def game_over?
+    scan_for_check
     if check?
+      scan_for_mate
       if mate?
-        puts 'checkmate'
+        checkmate
         return true
       end
     elsif stalemate? || draw?
-      true
+      return true
+    end
+    false
+  end
+
+  def take_turn
+    clear_display
+    welcome_message
+    display_board
+    player_in_check
+    player_input
+    change_player
+  end
+
+  def player_input
+    valid = false
+    until valid
+      input
+      if coordinates?
+        puts "input: coordinates"
+        if valid_move?
+          puts "is a valid move"
+          # Checkmate?
+          puts "checkmate?"
+          scan_for_mate
+          break if mate?
+          # In check already?
+          puts "no"
+          puts "in check already?"
+          if @player_turn == Board::B && @black_in_check
+            puts "yes"
+            update_board
+            scan_for_check
+            # Still in check?
+            puts "move piece"
+            puts "still in check?"
+            if @black_in_check
+              puts "yes"
+              backtrack_board
+              scan_for_check
+              puts "Invalid! You are still in check."
+            else
+              puts "not in check anymore"
+              puts "move valid"
+              valid = true
+            end
+          else
+            puts "no"
+            puts "board before"
+            display_board
+            update_board
+            display_board
+            puts "board after"
+            scan_for_check
+            puts "move piece"
+            puts "in check now?"
+            # Puts self in check?
+            if @black_in_check
+              puts "yes"
+              backtrack_board
+              puts "board after backtrack"
+              display_board
+              scan_for_check
+              puts "Invalid! That will put you in check."
+            else
+              puts "no"
+              puts "valid move"
+              valid = true
+            end
+          end
+
+        end
+      elsif command?
+        puts "input: command"
+        execute_command
+      else
+        puts "input: invalid"
+        valid = false
+      end
     end
   end
 
-  ##########################################
-  # game_over? submethods
+  def checkmate
+    clear_display
+    welcome_message
+    display_board
+    change_player
+    puts "Checkmate! #{@player_turn} is the Winner"
+  end
+
   def check?
-    if @white_in_check || @black_in_check
+    if @white_in_check
+      true
+    elsif @black_in_check
       true
     else
       false
@@ -96,7 +184,6 @@ class Chess
     @black_moves.each do |moves|
       if moves.include?(@white_king)
         @white_in_check = true
-        puts "#{selected_piece_colour(@white_king[0], @white_king[1]).capitalize} is in check!"
       end
     end
   end
@@ -107,55 +194,38 @@ class Chess
     @white_moves.each do |moves|
       if moves.include?(@black_king)
         @black_in_check = true
-        puts "#{selected_piece_colour(@black_king[0], @black_king[1]).capitalize} is in check!"
       end
     end
+  end
+
+  def compare_available_positions(king, moves)
+    checkmate = []
+    # Get king moves using King location
+    king_moves = possible_moves(king[0], king[1])
+
+    # Check if king moves are available
+    king_moves.each do |move|
+      list_of_moves = moves.flatten(1)
+      checkmate << list_of_moves.include?(move)
+    end
+
+    # Is it checkmate?
+    if checkmate.all? { |result| result == true }
+      return true
+    end
+    false
   end
 
   def scan_for_mate
     if @white_in_check
-      checkmate = []
-      king_moves = possible_moves(@white_king[0], @white_king[1])
-
-      king_moves.each do |move|
-        list_of_moves = @black_moves.flatten(1)
-          checkmate << if list_of_moves.include?(move)
-                         true
-                       else
-                         false
-                       end
-      end
-
-      if checkmate.all? { |result| result == true }
-        puts 'Checkmate! Black is the winner.'
-        @checkmate = true
-        return true
-      end
+      @checkmate = compare_available_positions(@white_king, @black_moves)
     elsif @black_in_check
-      checkmate = []
-      king_moves = possible_moves(@black_king[0], @black_king[1])
-
-      king_moves.each do |move|
-        list_of_moves = @white_moves.flatten(1)
-          checkmate << if list_of_moves.include?(move)
-                         true
-                       else
-                         false
-                       end
-      end
-
-      if checkmate.all? { |result| result == true }
-        puts 'Checkmate! White is the winner.'
-        @checkmate = true
-        return true
-      end
-    else
-      false
+      @checkmate = compare_available_positions(@black_king, @white_moves)
     end
   end
 
   def mate?
-    @checkmate
+    return true if @checkmate
   end
 
   def stalemate?
@@ -165,24 +235,11 @@ class Chess
   def draw?
     false
   end
-  # game_over? submethods
-  ##########################################
-
-  def take_turn
-    clear_display
-    welcome_message
-    display_board
-    scan_for_mate
-    exit if @checkmate
-    scan_for_check
-    player_input
-    change_player
-  end
 
   ##########################################
   # take_turn submethods
   def clear_display
-    system('clear') || system('clc')
+    # system('clear') || system('clc')
   end
 
   def welcome_message
@@ -198,54 +255,15 @@ class Chess
     @chess_board.display
   end
 
-  def player_in_check?
-    if @player_turn == Board::W && @white_in_check
-      true
-    elsif @player_turn == Board::B && @black_in_check
-      true
-    else
-      false
+  def player_in_check
+    if @white_in_check
+      puts "White in check!"
+    elsif @black_in_check
+      puts "Black in check!"
     end
   end
 
-  def player_input
-    valid = false
-    until valid
-      input
-      if coordinates?
-        if valid_move?
-          if player_in_check?
-            unless scan_for_mate
-              update_board
-              scan_for_check
-                if player_in_check?
-                  backtrack_board
-                  valid = false
-                else
-                  valid = true
-                end
-            end
-          else
-            update_board
-            scan_for_check
-            if player_in_check?
-              puts "That will put you in check!"
-              backtrack_board
-              valid = false
-            else
-              valid = true
-            end
-          end
-        else
-          valid = false
-        end
-      elsif command?
-        execute_command
-      else
-        valid = false
-      end
-    end
-  end
+
 
   def change_player
     @player_turn = @player_turn == Board::W ? Board::B : Board::W
@@ -266,26 +284,50 @@ class Chess
 
   def valid_move?
     separate_coordinates
+
     return false if didnt_move?
+    puts "moved?"
+    puts "row : #{@row}, col : #{@col}"
+    puts "player turn #{@player_turn}"
+    puts "piece colour #{selected_piece_colour}"
+    puts "piece colour #{selected_piece_type}"
     return false unless selected_piece_colour == @player_turn
+    puts "selected correct colour"
+
     return false if destination_colour == @player_turn
+    puts "destination colour is not the same"
+
     return false unless legal_moves.include?(move)
+    puts "inside legal moves"
+
     return false if destination_piece_type == 'King'
+    puts "destination not king"
+    puts "passes everything"
     true
   end
 
   def update_board
-    @backtrack_board = @chess_board.board
+    @backtrack_board = @chess_board
+    @backtrack_board.board = @chess_board.board
     move_piece
     remove_piece
   end
 
   def backtrack_board
-    @chess_board.board = @backtrack_board
+    @chess_board.board = @backtrack_board.board
+    move_piece_back
+    remove_test_piece
+  end
+
+  def move_piece_back
+    @chess_board.board[@row][@col] = @chess_board.board[@row_new][@col_new]
+  end
+
+  def remove_test_piece
+    @chess_board.board[@row_new][@col_new] = Piece.new(@chess_board.blank)
   end
 
   def move_piece
-    @old_piece = @chess_board.board[@row_new][@col_new]
     @chess_board.board[@row_new][@col_new] = @chess_board.board[@row][@col]
   end
 
