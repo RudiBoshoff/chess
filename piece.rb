@@ -7,6 +7,7 @@ class Piece
   end
 
   def simplify_moves(moves, board)
+    # Removes moves that are out of bounds
     moves.uniq.delete_if do |move|
       move[1] > 8 || move[1] < 1 ||
         move[0] < 0 || move[0] > 7 ||
@@ -15,6 +16,7 @@ class Piece
   end
 
   def delete_self(row, col, moves, _board)
+    # Prevents user from moving piece to current location
     moves.uniq.delete_if do |coordinate|
       coordinate == [row, col]
     end.sort!
@@ -24,28 +26,29 @@ end
 class Pawn < Piece
   def possible_moves(row, col, board)
     first_move = []
-
+      # White
     if colour == 'white'
-      # pawn first move
+      # Pawn first move
       if row == 6
         if board[row - 1][col].class.to_s == 'Piece' && board[row - 2][col].class.to_s == 'Piece'
           first_move << [row - 2, col]
         end
       end
 
-      # normal moves
+      # Pawn normal moves
       next_row = row - 1
       moves = [[next_row, col - 1], [next_row, col + 1]]
       moves << [next_row, col] if board[next_row][col].class.to_s == 'Piece'
     else
-      # pawn first move
+      # Black
+      # Pawn first move
       if row == 1
         if board[row + 1][col].class.to_s == 'Piece' && board[row + 2][col].class.to_s == 'Piece'
           first_move << [row + 2, col]
         end
       end
 
-      # normal moves
+      # Pawn normal moves
       next_row = row + 1
       moves = [[next_row, col - 1], [next_row, col + 1]]
       moves << [next_row, col] if board[next_row][col].class.to_s == 'Piece'
@@ -80,8 +83,8 @@ end
 
 class Queen < Piece
   def possible_moves(row, col, board)
-    # Bishop
-    # diagonal /
+    # Queen
+    # Diagonal /
     r = row
     c = col
     diagonal_first = []
@@ -98,6 +101,8 @@ class Queen < Piece
       end
     end
 
+    # Queen
+    # Diagonal /
     r = row
     c = col
     until c < 1
@@ -112,7 +117,8 @@ class Queen < Piece
       end
     end
 
-    # diagonal \
+    # Queen
+    # Diagonal \
     r = row
     c = col
     diagonal_second = []
@@ -128,6 +134,8 @@ class Queen < Piece
       end
     end
 
+    # Queen
+    # Diagonal \
     r = row
     c = col
     until c < 1
@@ -143,8 +151,8 @@ class Queen < Piece
       end
     end
 
-    # Rook
-    # vertically up
+    # Queen
+    # Vertically up
     r = row
     vertical_moves = []
     until r > 7
@@ -159,7 +167,8 @@ class Queen < Piece
       end
     end
 
-    # vertically down
+    # Queen
+    # Vertically down
     r = row
     until r < 0
       vertical_moves << [r, col]
@@ -173,7 +182,8 @@ class Queen < Piece
       end
     end
 
-    # horizontally right
+    # Queen
+    # Horizontally right
     c = col
     horizontal_moves = []
     until c > 8
@@ -188,7 +198,8 @@ class Queen < Piece
       end
     end
 
-    # horizontally left
+    # Queen
+    # Horizontally left
     c = col
     until c < 1
       horizontal_moves << [row, c]
@@ -202,6 +213,7 @@ class Queen < Piece
       end
     end
 
+    # Combines moves
     moves = horizontal_moves + vertical_moves + diagonal_first + diagonal_second
     moves = simplify_moves(moves, board)
     moves = delete_self(row, col, moves, board)
@@ -210,7 +222,8 @@ end
 
 class Bishop < Piece
   def possible_moves(row, col, board)
-    # diagonal /
+    # Bishop
+    # Diagonal /
     r = row
     c = col
     diagonal_first = []
@@ -227,6 +240,8 @@ class Bishop < Piece
       end
     end
 
+    # Bishop
+    # Diagonal /
     r = row
     c = col
     until c < 1
@@ -242,7 +257,8 @@ class Bishop < Piece
       end
     end
 
-    # diagonal \
+    # Bishop
+    # Diagonal \
     r = row
     c = col
     diagonal_second = []
@@ -259,6 +275,8 @@ class Bishop < Piece
       end
     end
 
+    # Bishop
+    # Diagonal \
     r = row
     c = col
     until c < 1
@@ -274,6 +292,7 @@ class Bishop < Piece
       end
     end
 
+    # Combines moves
     moves = diagonal_first + diagonal_second
     moves = simplify_moves(moves, board)
     moves = delete_self(row, col, moves, board)
@@ -282,7 +301,8 @@ end
 
 class Rook < Piece
   def possible_moves(row, col, board)
-    # vertically up
+    # Rook
+    # Vertically up
     r = row
     vertical_moves = []
     until r > 7
@@ -297,7 +317,8 @@ class Rook < Piece
       end
     end
 
-    # vertically down
+    # Rook
+    # Vertically down
     r = row
     until r < 0
       vertical_moves << [r, col]
@@ -311,7 +332,8 @@ class Rook < Piece
       end
     end
 
-    # horizontally right
+    # Rook
+    # Horizontally right
     c = col
     horizontal_moves = []
     until c > 8
@@ -326,7 +348,8 @@ class Rook < Piece
       end
     end
 
-    # horizontally left
+    # Rook
+    # Horizontally left
     c = col
     until c < 1
       horizontal_moves << [row, c]
@@ -340,6 +363,7 @@ class Rook < Piece
       end
     end
 
+    # Combines moves
     moves = horizontal_moves + vertical_moves
     moves = simplify_moves(moves, board)
     moves = delete_self(row, col, moves, board)
