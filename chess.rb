@@ -15,6 +15,8 @@ class Chess
     take_turn until game_over?
   end
 
+  ##########################################
+  # play_game submethods
   def game_over?
     scan_for_check
     if check?
@@ -36,6 +38,94 @@ class Chess
     display_player_status
     player_input
     change_player
+  end
+  # play_game submethods
+  ##########################################
+
+
+  ##########################################
+  # game_over? submethods
+  def scan_for_check
+    # determine each pieces' moves
+    scan_moves
+
+    # locate the kings
+    find_kings
+
+    # white in check?
+    white_in_check
+
+    # black in check?
+    black_in_check
+  end
+
+  def check?
+    if @white_in_check
+      true
+    elsif @black_in_check
+      true
+    else
+      false
+    end
+  end
+
+  def scan_for_mate
+    if @white_in_check
+      @checkmate = compare_available_positions(@white_king, @black_moves)
+    elsif @black_in_check
+      @checkmate = compare_available_positions(@black_king, @white_moves)
+    end
+  end
+
+  def mate?
+    return true if @checkmate
+  end
+
+  def checkmate
+    clear_display
+    welcome_message
+    display_board
+    change_player
+    puts "Checkmate! #{@player_turn.capitalize} is the Winner"
+  end
+
+  def stalemate?
+    false
+  end
+
+  def draw?
+    false
+  end
+  # game_over? submethods
+  ##########################################
+
+
+  ##########################################
+  # take_turn submthods
+  def clear_display
+    system('clear') || system('clc')
+  end
+
+  def welcome_message
+    puts 'Welcome to Chess!'
+    puts 'Please use explicit syntax to move pieces.'
+    puts "Typing 'A2A4' will move the piece at 'A2' to 'A4'"
+    puts 'You can save, load, or exit your game by typing:'
+    puts "'save', 'load', or 'exit'"
+    puts "You can also propose a draw by entering 'draw'."
+    puts 'Good luck!'
+  end
+
+  def display_board
+    @chess_board.display
+  end
+
+  def display_player_status
+    if @white_in_check
+      puts 'White in check!'
+    elsif @black_in_check
+      puts 'Black in check!'
+    end
   end
 
   def player_input
@@ -96,179 +186,15 @@ class Chess
     end
   end
 
-  def still_in_check
-    backtrack_board
-    scan_for_check
-    puts 'Invalid move! You are still in check.'
-  end
-
-  def puts_self_in_check
-    backtrack_board
-    scan_for_check
-    puts 'Invalid move! That will put you in check.'
-  end
-
-  def checkmate
-    clear_display
-    welcome_message
-    display_board
-    change_player
-    puts "Checkmate! #{@player_turn.capitalize} is the Winner"
-  end
-
-  def check?
-    if @white_in_check
-      true
-    elsif @black_in_check
-      true
-    else
-      false
-    end
-  end
-
-  def find_kings
-    # looks for king locations
-    row = 0
-    while row <= 7
-      col = 1
-      while col <= 8
-        if selected_piece_type(row, col) == 'King'
-          if selected_piece_colour(row, col) == Board::W
-            @white_king = [row, col]
-          elsif selected_piece_colour(row, col) == Board::B
-            @black_king = [row, col]
-          end
-        end
-        col += 1
-      end
-      row += 1
-    end
-  end
-
-  def scan_for_check
-    # determine each pieces' moves
-    scan_moves
-
-    # locate the kings
-    find_kings
-
-    # white in check?
-    white_in_check
-
-    # black in check?
-    black_in_check
-  end
-
-  def scan_moves
-    @white_moves = []
-    @black_moves = []
-
-    r = 0
-    while r <= 7
-      c = 1
-      while c <= 8
-        if selected_piece_type(r, c) != 'Piece' && selected_piece_type(r, c) != 'King'
-          if selected_piece_colour(r, c) == Board::B
-            @black_moves << possible_moves(r, c)
-          elsif selected_piece_colour(r, c) == Board::W
-            @white_moves << possible_moves(r, c)
-          end
-        end
-        c += 1
-      end
-      r += 1
-    end
-  end
-
-  def white_in_check
-    @white_in_check = false
-
-    @black_moves.each do |moves|
-      @white_in_check = true if moves.include?(@white_king)
-    end
-  end
-
-  def black_in_check
-    @black_in_check = false
-
-    @white_moves.each do |moves|
-      @black_in_check = true if moves.include?(@black_king)
-    end
-  end
-
-  def compare_available_positions(king, moves)
-    checkmate = []
-    # Get king moves using King location
-    king_moves = possible_moves(king[0], king[1])
-
-    # Check if king moves are available
-    king_moves.each do |move|
-      list_of_moves = moves.flatten(1)
-      checkmate << list_of_moves.include?(move)
-    end
-
-    # Is it checkmate?
-    return true if checkmate.all? { |result| result == true }
-
-    false
-  end
-
-  def scan_for_mate
-    if @white_in_check
-      @checkmate = compare_available_positions(@white_king, @black_moves)
-    elsif @black_in_check
-      @checkmate = compare_available_positions(@black_king, @white_moves)
-    end
-  end
-
-  def mate?
-    return true if @checkmate
-  end
-
-  def stalemate?
-    false
-  end
-
-  def draw?
-    false
-  end
-
-  ##########################################
-  # take_turn submethods
-  def clear_display
-    system('clear') || system('clc')
-  end
-
-  def welcome_message
-    puts 'Welcome to Chess!'
-    puts 'Please use explicit syntax to move pieces.'
-    puts "Typing 'A2A4' will move the piece at 'A2' to 'A4'"
-    puts 'You can save, load, or exit your game by typing:'
-    puts "'save', 'load', or 'exit'"
-    puts "You can also propose a draw by entering 'draw'."
-    puts 'Good luck!'
-  end
-
-  def display_board
-    @chess_board.display
-  end
-
-  def display_player_status
-    if @white_in_check
-      puts 'White in check!'
-    elsif @black_in_check
-      puts 'Black in check!'
-    end
-  end
-
   def change_player
     @player_turn = @player_turn == Board::W ? Board::B : Board::W
   end
   # take_turn submethods
   ##########################################
 
+
   ##########################################
-  # player_input submethods
+  # player_input submthods
   def input
     puts "It's #{@player_turn.capitalize}'s turn. Please enter your move/ command."
     @input = gets.chomp.upcase
@@ -297,26 +223,16 @@ class Chess
     remove_piece
   end
 
-  def backtrack_board
-    @chess_board.board = @backtrack_board.board
-    move_piece_back
-    remove_test_piece
+  def still_in_check
+    backtrack_board
+    scan_for_check
+    puts 'Invalid move! You are still in check.'
   end
 
-  def move_piece_back
-    @chess_board.board[@row][@col] = @chess_board.board[@row_new][@col_new]
-  end
-
-  def remove_test_piece
-    @chess_board.board[@row_new][@col_new] = Piece.new(@chess_board.blank)
-  end
-
-  def move_piece
-    @chess_board.board[@row_new][@col_new] = @chess_board.board[@row][@col]
-  end
-
-  def remove_piece
-    @chess_board.board[@row][@col] = Piece.new(@chess_board.blank)
+  def puts_self_in_check
+    backtrack_board
+    scan_for_check
+    puts 'Invalid move! That will put you in check.'
   end
 
   def command?
@@ -344,11 +260,12 @@ class Chess
       # load function
     end
   end
-  # player_input submethods
+  # player_input submthods
   ##########################################
 
+
   ##########################################
-  # valid_input? submethods
+  # valid_move? submethods
   def separate_coordinates
     piece = @input[0..1]
     @row = input_to_row(piece[1])
@@ -367,20 +284,12 @@ class Chess
     @chess_board.board[row][col].colour
   end
 
-  def selected_piece_type(row = @row, col = @col)
-    @chess_board.board[row][col].class.to_s
-  end
-
   def destination_colour
     @chess_board.board[@row_new][@col_new].colour
   end
 
   def legal_moves
     possible_moves
-  end
-
-  def possible_moves(row = @row, col = @col)
-    @chess_board.board[row][col].possible_moves(row, col, @chess_board.board)
   end
 
   def move
@@ -390,7 +299,12 @@ class Chess
   def destination_piece_type
     @chess_board.board[@row_new][@col_new].class.to_s
   end
+  # valid_move? submethods
+  ##########################################
 
+
+  ##########################################
+  # separate_coordinates submethods
   def input_to_row(row)
     8 - row.to_i
   end
@@ -415,8 +329,140 @@ class Chess
       8
     end
   end
+  # separate_coordinates submethods
+  ##########################################
 
-  # valid_input? submethods
+
+  ##########################################
+  # scan_for_check submethods
+  def scan_moves
+    @white_moves = []
+    @black_moves = []
+
+    r = 0
+    while r <= 7
+      c = 1
+      while c <= 8
+        if selected_piece_type(r, c) != 'Piece' && selected_piece_type(r, c) != 'King'
+          if selected_piece_colour(r, c) == Board::B
+            @black_moves << possible_moves(r, c)
+          elsif selected_piece_colour(r, c) == Board::W
+            @white_moves << possible_moves(r, c)
+          end
+        end
+        c += 1
+      end
+      r += 1
+    end
+  end
+
+  def find_kings
+    # looks for king locations
+    row = 0
+    while row <= 7
+      col = 1
+      while col <= 8
+        if selected_piece_type(row, col) == 'King'
+          if selected_piece_colour(row, col) == Board::W
+            @white_king = [row, col]
+          elsif selected_piece_colour(row, col) == Board::B
+            @black_king = [row, col]
+          end
+        end
+        col += 1
+      end
+      row += 1
+    end
+  end
+
+  def white_in_check
+    @white_in_check = false
+
+    @black_moves.each do |moves|
+      @white_in_check = true if moves.include?(@white_king)
+    end
+  end
+
+  def black_in_check
+    @black_in_check = false
+
+    @white_moves.each do |moves|
+      @black_in_check = true if moves.include?(@black_king)
+    end
+  end
+  # scan_for_check submethods
+  ##########################################
+
+
+  ##########################################
+  # update_board submethods
+  def move_piece
+    @chess_board.board[@row_new][@col_new] = @chess_board.board[@row][@col]
+  end
+
+  def remove_piece
+    @chess_board.board[@row][@col] = Piece.new(@chess_board.blank)
+  end
+  # update_board submethods
+  ##########################################
+
+
+  ##########################################
+  # still_in_check and puts_self_in_check submethods
+  def backtrack_board
+    @chess_board.board = @backtrack_board.board
+    move_piece_back
+    remove_test_piece
+  end
+  # still_in_check and puts_self_in_check submethods
+  ##########################################
+
+
+  ##########################################
+  # backtrack_board submethods
+  def move_piece_back
+    @chess_board.board[@row][@col] = @chess_board.board[@row_new][@col_new]
+  end
+
+  def remove_test_piece
+    @chess_board.board[@row_new][@col_new] = Piece.new(@chess_board.blank)
+  end
+  # backtrack_board submethods
+  ##########################################
+
+
+  ##########################################
+  # scan_for_mate submethods
+  def compare_available_positions(king, moves)
+    checkmate = []
+    # Get king moves using King location
+    king_moves = possible_moves(king[0], king[1])
+
+    # Check if king moves are available
+    king_moves.each do |move|
+      list_of_moves = moves.flatten(1)
+      checkmate << list_of_moves.include?(move)
+    end
+
+    # Is it checkmate?
+    return true if checkmate.all? { |result| result == true }
+
+    false
+  end
+  # scan_for_mate submethods
+  ##########################################
+
+
+  ##########################################
+  # scan_moves submethods
+  def selected_piece_type(row = @row, col = @col)
+    @chess_board.board[row][col].class.to_s
+  end
+
+  def possible_moves(row = @row, col = @col)
+    @chess_board.board[row][col].possible_moves(row, col, @chess_board.board)
+  end
+  # scan_moves submethods
   ##########################################
 end
 
