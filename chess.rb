@@ -178,9 +178,7 @@ class Chess
       elsif command?
         execute_command
       else
-        puts 'Input invalid. Please enter coordinates or a command.'
-        puts "coordinates: \teg. 'a2a4'"
-        puts "command: \teg. 'exit'"
+        display_invalid_message
         valid = false
       end
     end
@@ -259,6 +257,12 @@ class Chess
       puts 'Previous save has been loaded.'
       # load function
     end
+  end
+
+  def display_invalid_message
+    puts 'Input invalid. Please enter coordinates or a command.'
+    puts "coordinates: \teg. 'a2a4'"
+    puts "command: \teg. 'exit'"
   end
   # player_input submthods
   ##########################################
