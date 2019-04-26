@@ -1,14 +1,14 @@
 require_relative 'piece'
 
 class Board
-  attr_accessor :board, :blank, :log
+  attr_accessor :board, :blank
 
   B = 'black'.freeze
   W = 'white'.freeze
 
   def initialize
     # Assigns utf8 codes for each type of piece
-    # white
+    # White
     @w_pawn = "\u265F "
     @w_rook = "\u265C "
     @w_knight = "\u265E "
@@ -16,7 +16,7 @@ class Board
     @w_queen = "\u265B "
     @w_king = "\u265A "
 
-    # black
+    # Black
     @b_pawn = "\u2659 "
     @b_rook = "\u2656 "
     @b_knight = "\u2658 "
@@ -24,12 +24,8 @@ class Board
     @b_queen = "\u2655 "
     @b_king = "\u2654 "
 
-    # empty block
+    # Empty block
     @blank = "\u26F6 "
-    # @blank = " \u00b7"
-
-    # list of moves
-    @log = ""
   end
 
   def generate
@@ -45,7 +41,7 @@ class Board
   def display
     # Displays board with pieces
     puts "\n"
-    puts @board.map { |array| array.map{|piece| piece.appearance}.join}
+    puts @board.map { |array| array.map(&:appearance).join }
     puts "\n"
 
     # Displays labels
