@@ -26,7 +26,7 @@ end
 class Pawn < Piece
   def possible_moves(row, col, board)
     first_move = []
-      # White
+    # White
     if colour == 'white'
       # Pawn first move
       if row == 6
@@ -110,6 +110,7 @@ class Queen < Piece
       r -= 1
       c -= 1
       next unless r >= 0 && c >= 1
+
       piece_type = board[r][c].class.to_s
       if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]
@@ -127,6 +128,7 @@ class Queen < Piece
       r -= 1
       c += 1
       next unless r >= 0 && c <= 8
+
       piece_type = board[r][c].class.to_s
       if piece_type != 'Piece' && piece_type != 'King'
         diagonal_first << [r, c]

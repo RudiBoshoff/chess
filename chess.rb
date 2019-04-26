@@ -33,7 +33,7 @@ class Chess
     clear_display
     welcome_message
     display_board
-    player_in_check
+    display_player_status
     player_input
     change_player
   end
@@ -43,67 +43,69 @@ class Chess
     until valid
       input
       if coordinates?
-        puts "input: coordinates"
         if valid_move?
-          puts "is a valid move"
           # Checkmate?
-          puts "checkmate?"
           scan_for_mate
           break if mate?
+
           # In check already?
-          puts "no"
-          puts "in check already?"
           if @player_turn == Board::B && @black_in_check
-            puts "yes"
             update_board
             scan_for_check
+
             # Still in check?
-            puts "move piece"
-            puts "still in check?"
             if @black_in_check
-              puts "yes"
-              backtrack_board
-              scan_for_check
-              puts "Invalid! You are still in check."
+              still_in_check
             else
-              puts "not in check anymore"
-              puts "move valid"
+              valid = true
+            end
+
+          # In check already?
+          elsif @player_turn == Board::W && @white_in_check
+            update_board
+            scan_for_check
+
+            # Still in check?
+            if @white_in_check
+              still_in_check
+            else
               valid = true
             end
           else
-            puts "no"
-            puts "board before"
-            display_board
             update_board
-            display_board
-            puts "board after"
             scan_for_check
-            puts "move piece"
-            puts "in check now?"
+
             # Puts self in check?
-            if @black_in_check
-              puts "yes"
-              backtrack_board
-              puts "board after backtrack"
-              display_board
-              scan_for_check
-              puts "Invalid! That will put you in check."
+            if @black_in_check && @player_turn == Board::B
+              puts_self_in_check
+            elsif @white_in_check && @player_turn == Board::W
+              puts_self_in_check
             else
-              puts "no"
-              puts "valid move"
               valid = true
             end
           end
-
         end
       elsif command?
-        puts "input: command"
         execute_command
       else
-        puts "input: invalid"
+        puts 'Input invalid. Please enter coordinates or a command.'
+        puts "coordinates: \teg. 'a2a4'"
+        puts "command: \teg. 'exit'"
         valid = false
       end
     end
+  end
+
+  def still_in_check
+    backtrack_board
+    scan_for_check
+    puts 'Invalid move! You are still in check.'
+  end
+
+  def puts_self_in_check
+    backtrack_board
+    scan_for_check
+    puts 'Invalid move! That will put you in check.'
   end
 
   def checkmate
@@ -111,7 +113,7 @@ class Chess
     welcome_message
     display_board
     change_player
-    puts "Checkmate! #{@player_turn} is the Winner"
+    puts "Checkmate! #{@player_turn.capitalize} is the Winner"
   end
 
   def check?
@@ -182,9 +184,7 @@ class Chess
     @white_in_check = false
 
     @black_moves.each do |moves|
-      if moves.include?(@white_king)
-        @white_in_check = true
-      end
+      @white_in_check = true if moves.include?(@white_king)
     end
   end
 
@@ -192,9 +192,7 @@ class Chess
     @black_in_check = false
 
     @white_moves.each do |moves|
-      if moves.include?(@black_king)
-        @black_in_check = true
-      end
+      @black_in_check = true if moves.include?(@black_king)
     end
   end
 
@@ -210,9 +208,8 @@ class Chess
     end
 
     # Is it checkmate?
-    if checkmate.all? { |result| result == true }
-      return true
-    end
+    return true if checkmate.all? { |result| result == true }
+
     false
   end
 
@@ -239,14 +236,15 @@ class Chess
   ##########################################
   # take_turn submethods
   def clear_display
-    # system('clear') || system('clc')
+    system('clear') || system('clc')
   end
 
   def welcome_message
     puts 'Welcome to Chess!'
     puts 'Please use explicit syntax to move pieces.'
-    puts "Typing A2A4 will move the piece at A2' to A4"
-    puts "You can save, load, or exit your game by typing 'save', 'load', or 'exit'"
+    puts "Typing 'A2A4' will move the piece at 'A2' to 'A4'"
+    puts 'You can save, load, or exit your game by typing:'
+    puts "'save', 'load', or 'exit'"
     puts "You can also propose a draw by entering 'draw'."
     puts 'Good luck!'
   end
@@ -255,15 +253,13 @@ class Chess
     @chess_board.display
   end
 
-  def player_in_check
+  def display_player_status
     if @white_in_check
-      puts "White in check!"
+      puts 'White in check!'
     elsif @black_in_check
-      puts "Black in check!"
+      puts 'Black in check!'
     end
   end
-
-
 
   def change_player
     @player_turn = @player_turn == Board::W ? Board::B : Board::W
@@ -286,23 +282,11 @@ class Chess
     separate_coordinates
 
     return false if didnt_move?
-    puts "moved?"
-    puts "row : #{@row}, col : #{@col}"
-    puts "player turn #{@player_turn}"
-    puts "piece colour #{selected_piece_colour}"
-    puts "piece colour #{selected_piece_type}"
     return false unless selected_piece_colour == @player_turn
-    puts "selected correct colour"
-
     return false if destination_colour == @player_turn
-    puts "destination colour is not the same"
-
     return false unless legal_moves.include?(move)
-    puts "inside legal moves"
-
     return false if destination_piece_type == 'King'
-    puts "destination not king"
-    puts "passes everything"
+
     true
   end
 
