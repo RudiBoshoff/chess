@@ -31,34 +31,20 @@ Tasks:
 
 Things to still implement:
 
-a. generate chess board + actual pieces: done
-
-b. process inputs (commands/ moves): done
-
-c. idiot proofing (user input): done
-
-d. move pieces legally (user input): done
-
-e. execute commands (user input): done
-
-f. check (moving into check + being put in check): done
-
-g. checkmate (determine winner + end game): done
-
-h. castling (long + short side): not done
-
-i. promotion (changes pawn to additional Queen): not done
-
-j. en passant (weird pawn move): not done
-
-k. saving (YAML): not done
-
-l. loading  (YAML): not done
-
-m. stalemate (maybe): not done
+1. generate chess board + actual pieces: done
+2. process inputs (commands/ moves): done
+3. idiot proofing (user input): done
+4. move pieces legally (user input): done
+5. execute commands (user input): done
+6. check (moving into check + being put in check): done
+7. checkmate (determine winner + end game): done
+8. castling (long + short side): not done
+9. promotion (changes pawn to additional Queen): not done
+10. en passant (weird pawn move): not done
+11. saving (YAML): not done
+12. loading  (YAML): not done
+13. stalemate (maybe): not done
 
 Extras to possibly implement:
-
-n. coloured console text (black pieces/ invalid moves/ check etc.): not done
-
-o. match replays (turn for turn playback with sleep): not done
+14. coloured console text (black pieces/ invalid moves/ check etc.): not done
+15. match replays (turn for turn playback with sleep): not done
