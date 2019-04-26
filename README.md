@@ -30,20 +30,35 @@ Tasks:
 7. ai (optional): not done
 
 Things to still implement:
+
 a. generate chess board + actual pieces: done
+
 b. process inputs (commands/ moves): done
+
 c. idiot proofing (user input): done
+
 d. move pieces legally (user input): done
+
 e. execute commands (user input): done
+
 f. check (moving into check + being put in check): done
+
 g. checkmate (determine winner + end game): done
+
 h. castling (long + short side): not done
+
 i. promotion (changes pawn to additional Queen): not done
-j. en passant (weird pawn move):
+
+j. en passant (weird pawn move): not done
+
 k. saving (YAML): not done
+
 l. loading  (YAML): not done
+
 m. stalemate (maybe): not done
 
 Extras to possibly implement:
+
 n. coloured console text (black pieces/ invalid moves/ check etc.): not done
+
 o. match replays (turn for turn playback with sleep): not done
