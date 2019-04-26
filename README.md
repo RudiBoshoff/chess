@@ -45,6 +45,8 @@ Things to still implement:
 12. loading  (YAML): not done
 13. stalemate (maybe): not done
 
-Extras to possibly implement:\n
-14. coloured console text (black pieces/ invalid moves/ check etc.): not done\n
+Extras to possibly implement:
+
+14. coloured console text (black pieces/ invalid moves/ check etc.): not done
+
 15. match replays (turn for turn playback with sleep): not done
