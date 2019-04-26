@@ -1,7 +1,7 @@
 PROJECT: RUBY FINAL PROJECT: Chess
 https://www.theodinproject.com/courses/ruby-programming/lessons/ruby-final-project#assignment
 
-Assignment
+Assignment:
 
 1. Build a command line Chess game where two players can play against each other.
 
@@ -16,3 +16,34 @@ Assignment
 6. Have fun! Check out the unicode characters for a little spice for your gameboard.
 
 7. (Optional extension) Build a very simple AI computer player (perhaps who does a random legal move)
+
+
+Last updated: 26/04/2019
+
+Tasks:
+1. multiplayer chess game: done
+2. idiot proofing: done
+3. save game: not done
+4. rsepc testing (optional): not done
+5. organiszed code: done
+6. unicode + had fun: done
+7. ai (optional): not done
+
+Things to still implement:
+a. generate chess board + actual pieces: done
+b. process inputs (commands/ moves): done
+c. idiot proofing (user input): done
+d. move pieces legally (user input): done
+e. execute commands (user input): done
+f. check (moving into check + being put in check): done
+g. checkmate (determine winner + end game): done
+h. castling (long + short side): not done
+i. promotion (changes pawn to additional Queen): not done
+j. en passant (weird pawn move):
+k. saving (YAML): not done
+l. loading  (YAML): not done
+m. stalemate (maybe): not done
+
+Extras to possibly implement:
+n. coloured console text (black pieces/ invalid moves/ check etc.): not done
+o. match replays (turn for turn playback with sleep): not done
