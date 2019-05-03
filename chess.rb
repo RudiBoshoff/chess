@@ -4,7 +4,7 @@ require_relative 'board'
 class Chess
   def initialize
     @chess_board = Board.new
-    @chess_board.generate
+    @chess_board.generate_board
     @chess_board.add_pieces_to_board
     @player_turn = Board::W
     @white_in_check = false
