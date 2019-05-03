@@ -1,3 +1,4 @@
+# Rudi Boshoff
 require_relative 'piece'
 
 class Board
@@ -7,14 +8,38 @@ class Board
   W = 'white'.freeze
 
   def initialize
-    # Assigns utf8 codes for each type of piece
+    assign_utfs_to_pieces
+  end
+
+  def assign_utfs_to_pieces
     assign_white_utfs
     assign_black_utfs
     assign_block_utf
   end
 
+  def generate_board
+    # Creates board, a 2D Array, filled with blanks
+    generate_empty_board
+    add_labels_to_board
+  end
+
+  def add_pieces_to_board
+    add_pawns
+    add_rooks
+    add_knights
+    add_bishops
+    add_kings
+    add_queens
+  end
+
+  def display
+    display_board_with_pieces
+    display_labels
+  end
+
+
   ##########################################
-  # initialize submethods
+  # assign_utfs_to_pieces submethods
   def assign_white_utfs
     @w_pawn = "\u265F "
     @w_rook = "\u265C "
@@ -36,15 +61,9 @@ class Board
   def assign_block_utf
     @blank = "\u26F6 "
   end
-  # initialize submethods
+  # assign_utfs_to_pieces submethods
   ##########################################
 
-
-  def generate_board
-    # Creates board, a 2D Array, filled with blanks
-    generate_empty_board
-    add_labels_to_board
-  end
 
   ##########################################
   # generate_board submethods
@@ -61,38 +80,6 @@ class Board
   # generate_board submethods
   ##########################################
 
-
-  def display
-    display_board_with_pieces
-    display_labels
-  end
-
-  ##########################################
-  # display submethods
-  def display_board_with_pieces
-    puts "\n"
-    puts @board.map { |array| array.map(&:appearance).join }
-    puts "\n"
-  end
-
-  def display_labels
-    labels = %w[A B C D E F G H]
-    labels.unshift '     '
-    puts labels.map { |i| i.to_s.rjust(2) }.join
-    puts "\n"
-  end
-  # display submethods
-  ##########################################
-
-
-  def add_pieces_to_board
-    add_pawns
-    add_rooks
-    add_knights
-    add_bishops
-    add_kings
-    add_queens
-  end
 
   ##########################################
   # add_pieces_to_board submethods
@@ -136,5 +123,23 @@ class Board
     @board[7][4] = Queen.new(@w_queen, W)
   end
   # add_pieces_to_board submethods
+  ##########################################
+
+
+  ##########################################
+  # display submethods
+  def display_board_with_pieces
+    puts "\n"
+    puts @board.map { |array| array.map(&:appearance).join }
+    puts "\n"
+  end
+
+  def display_labels
+    labels = %w[A B C D E F G H]
+    labels.unshift '     '
+    puts labels.map { |i| i.to_s.rjust(2) }.join
+    puts "\n"
+  end
+  # display submethods
   ##########################################
 end

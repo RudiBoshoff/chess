@@ -1,3 +1,4 @@
+# Rudi Boshoff
 class Piece
   attr_accessor :colour, :appearance
 
