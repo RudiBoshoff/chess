@@ -14,7 +14,7 @@ class Board
   def assign_utfs_to_pieces
     assign_white_utfs
     assign_black_utfs
-    assign_block_utf
+    assign_empty_block_utf
   end
 
   def generate_board
@@ -58,8 +58,8 @@ class Board
     @b_king = "\u2654 "
   end
 
-  def assign_block_utf
-    @blank = "\u26F6 "
+  def assign_empty_block_utf
+    @block = "\u26F6 "
   end
   # assign_utfs_to_pieces submethods
   ##########################################
@@ -68,7 +68,7 @@ class Board
   ##########################################
   # generate_board submethods
   def generate_empty_board
-    @board = Array.new(8) { Array.new(9, Piece.new(@blank)) }
+    @board = Array.new(8) { Array.new(9, Piece.new(@block)) }
   end
 
   def add_labels_to_board
@@ -76,7 +76,6 @@ class Board
       @board[index][0] = Piece.new('   ' + (@board.size - index).to_s + '  ')
     end
   end
-
   # generate_board submethods
   ##########################################
 
