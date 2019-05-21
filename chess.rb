@@ -406,7 +406,7 @@ class Chess
   end
 
   def remove_piece
-    @chess_board.board[@row][@col] = Piece.new(@chess_board.blank)
+    @chess_board.board[@row][@col] = Piece.new(@chess_board.empty_block)
   end
   # update_board submethods
   ##########################################

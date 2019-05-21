@@ -2,7 +2,7 @@
 require_relative 'piece'
 
 class Board
-  attr_accessor :board, :blank
+  attr_accessor :board, :empty_block
 
   B = 'black'.freeze
   W = 'white'.freeze
@@ -59,7 +59,7 @@ class Board
   end
 
   def assign_empty_block_utf
-    @block = "\u26F6 "
+    @empty_block = "\u26F6 "
   end
   # assign_utfs_to_pieces submethods
   ##########################################
@@ -68,7 +68,7 @@ class Board
   ##########################################
   # generate_board submethods
   def generate_empty_board
-    @board = Array.new(8) { Array.new(9, Piece.new(@block)) }
+    @board = Array.new(8) { Array.new(9, Piece.new(@empty_block)) }
   end
 
   def add_labels_to_board
