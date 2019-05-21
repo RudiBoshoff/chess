@@ -23,7 +23,7 @@ Last updated: 26/04/2019
 Tasks:
 1. multiplayer chess game: done
 2. idiot proofing: done
-3. save game: not done
+3. save game: done
 4. rsepc testing (optional): not done
 5. organiszed code: done
 6. unicode + had fun: done
@@ -41,8 +41,8 @@ Things to still implement:
 8. castling (long + short side): not done
 9. promotion (changes pawn to additional Queen): not done
 10. en passant (weird pawn move): not done
-11. saving (YAML): not done
-12. loading  (YAML): not done
+11. saving (YAML): done
+12. loading  (YAML): done
 13. stalemate (maybe): not done
 
 Extras to possibly implement:
