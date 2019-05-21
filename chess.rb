@@ -430,7 +430,7 @@ class Chess
   end
 
   def remove_test_piece
-    @chess_board.board[@row_new][@col_new] = Piece.new(@chess_board.blank)
+    @chess_board.board[@row_new][@col_new] = Piece.new(@chess_board.empty_block)
   end
   # backtrack_board submethods
   ##########################################
