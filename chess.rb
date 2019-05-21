@@ -1,4 +1,5 @@
 # Rudi Boshoff
+require 'yaml'
 require_relative 'piece'
 require_relative 'board'
 
@@ -10,6 +11,32 @@ class Chess
     @player_turn = Board::W
     @white_in_check = false
     @black_in_check = false
+  end
+
+  def load_saved_game
+    print "Would you like to load a saved game? Enter Y/N "
+    input = gets.chomp.downcase
+    load_game if input.include? "y"
+  end
+
+  def save_game
+    save = File.new('save.yml', 'w+')
+    data = {board: @chess_board,
+            turn: @player_turn,
+            w_check: @white_in_check,
+            b_check: @black_in_check}
+    save.puts YAML.dump(data)
+    save.close
+  end
+
+  def load_game
+    save = File.new('save.yml','r+')
+    data = YAML.load(save.read)
+    @chess_board = data[:board]
+    @player_turn = data[:turn]
+    @white_in_check = data[:w_check]
+    @black_in_check = data[:b_check]
+    save.close
   end
 
   def play_game
@@ -33,9 +60,7 @@ class Chess
   end
 
   def take_turn
-    clear_display
-    welcome_message
-    display_board
+    reset_board
     display_player_status
     player_input
     change_player
@@ -83,9 +108,7 @@ class Chess
   end
 
   def checkmate
-    clear_display
-    welcome_message
-    display_board
+    reset_board
     change_player
     puts "Checkmate! #{@player_turn.capitalize} is the Winner"
   end
@@ -253,11 +276,21 @@ class Chess
       change_player
     when 'SAVE'
       puts 'Game has been saved.'
-      # save function
+      save_game
+      puts 'Exiting game...'
+      exit
     when 'LOAD'
-      puts 'Previous save has been loaded.'
-      # load function
+      load_game
+      reset_board
+      puts "Previous save has been loaded.\n\n"
+      display_player_status
     end
+  end
+
+  def reset_board
+    clear_display
+    welcome_message
+    display_board
   end
 
   def display_invalid_message
