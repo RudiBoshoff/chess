@@ -13,12 +13,6 @@ class Chess
     @black_in_check = false
   end
 
-  def load_saved_game
-    print "Would you like to load a saved game? Enter Y/N "
-    input = gets.chomp.downcase
-    load_game if input.include? "y"
-  end
-
   def save_game
     save = File.new('save.yml', 'w+')
     data = {board: @chess_board,
@@ -30,13 +24,19 @@ class Chess
   end
 
   def load_game
-    save = File.new('save.yml','r+')
-    data = YAML.load(save.read)
-    @chess_board = data[:board]
-    @player_turn = data[:turn]
-    @white_in_check = data[:w_check]
-    @black_in_check = data[:b_check]
-    save.close
+    if File.exist?("save.yml")
+      save = File.new('save.yml','r+')
+      data = YAML.load(save.read)
+      @chess_board = data[:board]
+      @player_turn = data[:turn]
+      @white_in_check = data[:w_check]
+      @black_in_check = data[:b_check]
+      save.close
+      reset_board
+      puts "Previous save has been loaded.\n\n"
+    else
+      puts "No save file detected!"
+    end
   end
 
   def play_game
@@ -281,8 +281,6 @@ class Chess
       exit
     when 'LOAD'
       load_game
-      reset_board
-      puts "Previous save has been loaded.\n\n"
       display_player_status
     end
   end
