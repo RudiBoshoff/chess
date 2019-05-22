@@ -2,7 +2,7 @@
 require_relative 'piece'
 
 class Board
-  attr_accessor :board, :empty_block
+  attr_accessor :board, :empty_block, :w_queen, :b_queen
 
   B = 'black'.freeze
   W = 'white'.freeze
@@ -89,6 +89,7 @@ class Board
     # @board[6][col] = Pawn.new(@w_pawn, W)
 
       # TESTING BOARD
+      @board[1][2] = Pawn.new(@w_pawn, W)
       @board[1][5] = Pawn.new(@b_pawn, B)
       @board[1][6] = Pawn.new(@b_pawn, B)
       @board[1][7] = Pawn.new(@b_pawn, B)
