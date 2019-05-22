@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Rudi Boshoff
 require 'yaml'
 require_relative 'piece'
@@ -15,18 +17,18 @@ class Chess
 
   def save_game
     save = File.new('save.yml', 'w+')
-    data = {board: @chess_board,
-            turn: @player_turn,
-            w_check: @white_in_check,
-            b_check: @black_in_check}
+    data = { board: @chess_board,
+             turn: @player_turn,
+             w_check: @white_in_check,
+             b_check: @black_in_check }
     save.puts YAML.dump(data)
     save.close
   end
 
   def load_game
-    if File.exist?("save.yml")
-      save = File.new('save.yml','r+')
-      data = YAML.load(save.read)
+    if File.exist?('save.yml')
+      save = File.new('save.yml', 'r+')
+      data = YAML.safe_load(save.read)
       @chess_board = data[:board]
       @player_turn = data[:turn]
       @white_in_check = data[:w_check]
@@ -35,7 +37,7 @@ class Chess
       reset_board
       puts "Previous save has been loaded.\n\n"
     else
-      puts "No save file detected!"
+      puts 'No save file detected!'
     end
   end
 
@@ -67,7 +69,6 @@ class Chess
   end
   # play_game submethods
   ##########################################
-
 
   ##########################################
   # game_over? submethods
@@ -122,7 +123,6 @@ class Chess
   end
   # game_over? submethods
   ##########################################
-
 
   ##########################################
   # take_turn submthods
@@ -214,7 +214,6 @@ class Chess
   # take_turn submethods
   ##########################################
 
-
   ##########################################
   # player_input submthods
   def input
@@ -272,8 +271,7 @@ class Chess
       exit
     when 'CASTLE'
       puts 'Castling.'
-      # castling function
-      change_player
+      castle
     when 'SAVE'
       puts 'Game has been saved.'
       save_game
@@ -286,51 +284,102 @@ class Chess
   end
 
   def castle
-    row = @player_turn == Board::B ? 1 : 8
-    @long_castle = false
-    @short_castle = false
-    castle_king(row) if castling_valid?(row)
+    if @player_turn == Board::W && @white_in_check
+      puts 'Cannot castle while in check!'
+    elsif @player_turn == Board::B && @black_in_check
+      puts 'Cannot castle while in check!'
+    else
+      row = @player_turn == Board::B ? 0 : 7
+
+      @long_castle = false
+      @short_castle = false
+
+      castle_king(row) if castling_valid?(row)
+
+      if @long_castle == false && @short_castle == false
+        puts 'Castling invalid'
+      else
+        change_player
+      end
+    end
   end
 
   def castling_valid?(row)
     @long_castle = long_castle?(row)
     @short_castle = short_castle?(row)
-    if @long_castle || @short_castle
-      return true
-    end
+    return true if @long_castle || @short_castle
+
     false
   end
 
   def long_castle?(row)
-    if selected_piece_type(row,1) == "Rook" &&
-       selected_piece_type(row,2) == "Piece" &&
-       selected_piece_type(row,3) == "Piece" &&
-       selected_piece_type(row,4) == "Piece" &&
-       selected_piece_type(row,5) == "King"
+    if selected_piece_type(row, 1) == 'Rook' &&
+       selected_piece_type(row, 2) == 'Piece' &&
+       selected_piece_type(row, 3) == 'Piece' &&
+       selected_piece_type(row, 4) == 'Piece' &&
+       selected_piece_type(row, 5) == 'King'
+      return true if selected_piece_colour(row, 1) == @player_turn &&
+                     selected_piece_colour(row, 5) == @player_turn
     end
+    false
   end
 
   def short_castle?(row)
-    if selected_piece_type(row,8) == "Rook" &&
-       selected_piece_type(row,7) == "Piece" &&
-       selected_piece_type(row,6) == "Piece" &&
-       selected_piece_type(row,5) == "King"
+    if selected_piece_type(row, 8) == 'Rook' &&
+       selected_piece_type(row, 7) == 'Piece' &&
+       selected_piece_type(row, 6) == 'Piece' &&
+       selected_piece_type(row, 5) == 'King'
+      return true if selected_piece_colour(row, 8) == @player_turn &&
+                     selected_piece_colour(row, 5) == @player_turn
     end
+    false
   end
 
-  def castle_king(row)
+  def castle_pieces(row)
+    @backtrack_board.board = @chess_board.board
     if @long_castle
-      move_piece(row ,4 ,row ,1)
-      move_piece(row ,3 ,row ,5)
+      move_piece(row, 4, row, 1)
+      move_piece(row, 3, row, 5)
       remove_piece(row, 1)
       remove_piece(row, 5)
     else
-      move_piece(row ,6 ,row ,8)
-      move_piece(row ,7 ,row ,5)
+      move_piece(row, 6, row, 8)
+      move_piece(row, 7, row, 5)
       remove_piece(row, 8)
       remove_piece(row, 5)
     end
-    reset_board
+  end
+
+  def undo_castling(row)
+    @chess_board.board = @backtrack_board.board
+    if @long_castle
+      move_piece(row, 1, row, 4)
+      move_piece(row, 5, row, 3)
+      remove_piece(row, 4)
+      remove_piece(row, 3)
+    else
+      move_piece(row, 8, row, 6)
+      move_piece(row, 5, row, 7)
+      remove_piece(row, 6)
+      remove_piece(row, 7)
+    end
+    puts "That will put you in check!"
+  end
+
+  def castle_king(row)
+    castle_pieces(row)
+    scan_for_check
+    if @black_in_check && @player_turn == Board::B
+      undo_castling(row)
+    end
+    if @white_in_check && @player_turn == Board::W
+      undo_castling(row)
+    end
+    puts @row
+    puts @col
+    player_input
+    puts @row
+    puts @col
   end
 
   def reset_board
@@ -346,7 +395,6 @@ class Chess
   end
   # player_input submthods
   ##########################################
-
 
   ##########################################
   # valid_move? submethods
@@ -386,7 +434,6 @@ class Chess
   # valid_move? submethods
   ##########################################
 
-
   ##########################################
   # separate_coordinates submethods
   def input_to_row(row)
@@ -415,7 +462,6 @@ class Chess
   end
   # separate_coordinates submethods
   ##########################################
-
 
   ##########################################
   # scan_for_check submethods
@@ -477,7 +523,6 @@ class Chess
   # scan_for_check submethods
   ##########################################
 
-
   ##########################################
   # update_board submethods
   def move_piece(row_new = @row_new, col_new = @col_new, row = @row, col = @col)
@@ -490,7 +535,6 @@ class Chess
   # update_board submethods
   ##########################################
 
-
   ##########################################
   # still_in_check and puts_self_in_check submethods
   def backtrack_board
@@ -500,7 +544,6 @@ class Chess
   end
   # still_in_check and puts_self_in_check submethods
   ##########################################
-
 
   ##########################################
   # backtrack_board submethods
@@ -513,7 +556,6 @@ class Chess
   end
   # backtrack_board submethods
   ##########################################
-
 
   ##########################################
   # scan_for_mate submethods
@@ -535,7 +577,6 @@ class Chess
   end
   # scan_for_mate submethods
   ##########################################
-
 
   ##########################################
   # scan_moves submethods
