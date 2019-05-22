@@ -85,18 +85,18 @@ class Board
   def add_pawns
     col = 1
     while col <= 8
-    # @board[1][col] = Pawn.new(@b_pawn, B)
-    # @board[6][col] = Pawn.new(@w_pawn, W)
+    @board[1][col] = Pawn.new(@b_pawn, B)
+    @board[6][col] = Pawn.new(@w_pawn, W)
 
-      # TESTING BOARD
-      @board[1][2] = Pawn.new(@w_pawn, W)
-      @board[1][5] = Pawn.new(@b_pawn, B)
-      @board[1][6] = Pawn.new(@b_pawn, B)
-      @board[1][7] = Pawn.new(@b_pawn, B)
-      @board[6][col] = Rook.new(@w_rook, W)
-      @board[6][4] = Pawn.new(@w_pawn, W)
-      @board[6][6] = Pawn.new(@w_pawn, W)
-      @board[6][7] = Pawn.new(@w_pawn, W)
+      # # TESTING BOARD
+      # @board[1][2] = Pawn.new(@w_pawn, W)
+      # @board[1][5] = Pawn.new(@b_pawn, B)
+      # @board[1][6] = Pawn.new(@b_pawn, B)
+      # @board[1][7] = Pawn.new(@b_pawn, B)
+      # @board[6][col] = Rook.new(@w_rook, W)
+      # @board[6][4] = Pawn.new(@w_pawn, W)
+      # @board[6][6] = Pawn.new(@w_pawn, W)
+      # @board[6][7] = Pawn.new(@w_pawn, W)
 
       col += 1
     end
@@ -110,15 +110,15 @@ class Board
   end
 
   def add_knights
-    # @board[0][2] = Knight.new(@b_knight, B)
-    # @board[0][7] = Knight.new(@b_knight, B)
+    @board[0][2] = Knight.new(@b_knight, B)
+    @board[0][7] = Knight.new(@b_knight, B)
     @board[7][2] = Knight.new(@w_knight, W)
     @board[7][7] = Knight.new(@w_knight, W)
   end
 
   def add_bishops
-    # @board[0][3] = Bishop.new(@b_bishop, B)
-    # @board[0][6] = Bishop.new(@b_bishop, B)
+    @board[0][3] = Bishop.new(@b_bishop, B)
+    @board[0][6] = Bishop.new(@b_bishop, B)
     @board[7][3] = Bishop.new(@w_bishop, W)
     @board[7][6] = Bishop.new(@w_bishop, W)
   end
@@ -129,7 +129,7 @@ class Board
   end
 
   def add_queens
-    # @board[0][4] = Queen.new(@b_queen, B)
+    @board[0][4] = Queen.new(@b_queen, B)
     @board[7][4] = Queen.new(@w_queen, W)
   end
   # add_pieces_to_board submethods
