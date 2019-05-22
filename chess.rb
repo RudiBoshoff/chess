@@ -504,10 +504,6 @@ class Chess
       end
       r += 1
     end
-    puts "white"
-    print @white_moves
-    puts "black"
-    print @black_moves
   end
 
   def find_kings
