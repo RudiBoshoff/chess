@@ -1,0 +1,187 @@
+---
+:board: !ruby/object:Board
+  w_pawn: "♟ "
+  w_rook: "♜ "
+  w_knight: "♞ "
+  w_bishop: "♝ "
+  w_queen: "♛ "
+  w_king: "♚ "
+  b_pawn: "♙ "
+  b_rook: "♖ "
+  b_knight: "♘ "
+  b_bishop: "♗ "
+  b_queen: "♕ "
+  b_king: "♔ "
+  empty_block: "⛶ "
+  board:
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   8  "
+    - !ruby/object:Rook
+      colour: black
+      appearance: "♖ "
+    - !ruby/object:Knight
+      colour: black
+      appearance: "♘ "
+    - !ruby/object:Bishop
+      colour: black
+      appearance: "♗ "
+    - !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - !ruby/object:King
+      colour: black
+      appearance: "♔ "
+    - !ruby/object:Bishop
+      colour: black
+      appearance: "♗ "
+    - !ruby/object:Knight
+      colour: black
+      appearance: "♘ "
+    - !ruby/object:Rook
+      colour: black
+      appearance: "♖ "
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   7  "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   6  "
+    - &1 !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - *1
+    - *1
+    - !ruby/object:Queen
+      colour: black
+      appearance: "♕ "
+    - *1
+    - *1
+    - *1
+    - *1
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   5  "
+    - &2 !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - *2
+    - *2
+    - !ruby/object:Pawn
+      colour: black
+      appearance: "♙ "
+    - *2
+    - *2
+    - *2
+    - *2
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   4  "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - &3 !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - *3
+    - *3
+    - *3
+    - *3
+    - *3
+    - *3
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   3  "
+    - &4 !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - *4
+    - !ruby/object:Knight
+      colour: white
+      appearance: "♞ "
+    - *4
+    - *4
+    - *4
+    - *4
+    - *4
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   2  "
+    - !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+    - !ruby/object:Pawn
+      colour: white
+      appearance: "♟ "
+  - - !ruby/object:Piece
+      colour: 
+      appearance: "   1  "
+    - !ruby/object:Rook
+      colour: white
+      appearance: "♜ "
+    - !ruby/object:Piece
+      colour: 
+      appearance: "⛶ "
+    - !ruby/object:Bishop
+      colour: white
+      appearance: "♝ "
+    - !ruby/object:Queen
+      colour: white
+      appearance: "♛ "
+    - !ruby/object:King
+      colour: white
+      appearance: "♚ "
+    - !ruby/object:Bishop
+      colour: white
+      appearance: "♝ "
+    - !ruby/object:Knight
+      colour: white
+      appearance: "♞ "
+    - !ruby/object:Rook
+      colour: white
+      appearance: "♜ "
+:turn: white
+:w_check: false
+:b_check: false
