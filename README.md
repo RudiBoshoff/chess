@@ -18,7 +18,7 @@ Assignment:
 7. (Optional extension) Build a very simple AI computer player (perhaps who does a random legal move)
 
 
-Last updated: 26/04/2019
+Last updated: 22/05/2019
 
 Tasks:
 1. multiplayer chess game: done
