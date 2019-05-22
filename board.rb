@@ -102,8 +102,8 @@ class Board
   end
 
   def add_rooks
-    # @board[0][1] = Rook.new(@b_rook, B)
-    # @board[0][8] = Rook.new(@b_rook, B)
+    @board[0][1] = Rook.new(@b_rook, B)
+    @board[0][8] = Rook.new(@b_rook, B)
     @board[7][1] = Rook.new(@w_rook, W)
     @board[7][8] = Rook.new(@w_rook, W)
   end
