@@ -65,6 +65,7 @@ class Chess
     reset_board
     display_player_status
     player_input
+    scan_for_promotion
     change_player
   end
   # play_game submethods
@@ -211,6 +212,19 @@ class Chess
   def change_player
     @player_turn = @player_turn == Board::W ? Board::B : Board::W
   end
+
+  def scan_for_promotion
+    col = 1
+    while col <= 8
+      if selected_piece_type(0,col) == "Pawn"
+        @chess_board.board[0][col] = Queen.new(@chess_board.w_queen, Board::W)
+      elsif selected_piece_type(7,col) == "Pawn"
+        @chess_board.board[7][col] = Queen.new(@chess_board.b_queen, Board::B)
+      end
+      col += 1
+    end
+    scan_moves
+  end
   # take_turn submethods
   ##########################################
 
@@ -352,19 +366,19 @@ class Chess
   end
 
   def undo_castling(row)
-    @chess_board.board = @backtrack_board.board
-    if @long_castle
-      move_piece(row, 1, row, 4)
-      move_piece(row, 5, row, 3)
-      remove_piece(row, 4)
-      remove_piece(row, 3)
-    else
-      move_piece(row, 8, row, 6)
-      move_piece(row, 5, row, 7)
-      remove_piece(row, 6)
-      remove_piece(row, 7)
-    end
-    puts "That will put you in check!"
+    # @chess_board.board = @backtrack_board.board
+    # if @long_castle
+    #   move_piece(row, 1, row, 4)
+    #   move_piece(row, 5, row, 3)
+    #   remove_piece(row, 4)
+    #   remove_piece(row, 3)
+    # else
+    #   move_piece(row, 8, row, 6)
+    #   move_piece(row, 5, row, 7)
+    #   remove_piece(row, 6)
+    #   remove_piece(row, 7)
+    # end
+    # puts 'That will put you in check!'
   end
 
   def castle_king(row)
@@ -480,6 +494,10 @@ class Chess
       end
       r += 1
     end
+    puts "white"
+    print @white_moves
+    puts "black"
+    print @black_moves
   end
 
   def find_kings
