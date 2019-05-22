@@ -28,7 +28,7 @@ class Chess
   def load_game
     if File.exist?('save.yml')
       save = File.new('save.yml', 'r+')
-      data = YAML.safe_load(save.read)
+      data = YAML.load(save.read)
       @chess_board = data[:board]
       @player_turn = data[:turn]
       @white_in_check = data[:w_check]
@@ -321,6 +321,16 @@ class Chess
   def castling_valid?(row)
     @long_castle = long_castle?(row)
     @short_castle = short_castle?(row)
+    if @long_castle && @short_castle
+      puts"Enter the castle option:"
+      puts "long/short"
+      input = gets.chomp
+      if input == 'short'
+        @long_castle = false
+      else
+        @short_castle = false
+      end
+    end
     return true if @long_castle || @short_castle
 
     false
