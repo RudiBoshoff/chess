@@ -348,6 +348,7 @@ class Chess
       remove_piece(row, 8)
       remove_piece(row, 5)
     end
+    reset_board
   end
 
   def undo_castling(row)
@@ -368,18 +369,13 @@ class Chess
 
   def castle_king(row)
     castle_pieces(row)
-    scan_for_check
-    if @black_in_check && @player_turn == Board::B
-      undo_castling(row)
-    end
-    if @white_in_check && @player_turn == Board::W
-      undo_castling(row)
-    end
-    puts @row
-    puts @col
-    player_input
-    puts @row
-    puts @col
+    # scan_for_check
+    # if @black_in_check && @player_turn == Board::B
+    #   undo_castling(row)
+    # end
+    # if @white_in_check && @player_turn == Board::W
+    #   undo_castling(row)
+    # end
   end
 
   def reset_board
