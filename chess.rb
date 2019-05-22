@@ -285,6 +285,54 @@ class Chess
     end
   end
 
+  def castle
+    row = @player_turn == Board::B ? 1 : 8
+    @long_castle = false
+    @short_castle = false
+    castle_king(row) if castling_valid?(row)
+  end
+
+  def castling_valid?(row)
+    @long_castle = long_castle?(row)
+    @short_castle = short_castle?(row)
+    if @long_castle || @short_castle
+      return true
+    end
+    false
+  end
+
+  def long_castle?(row)
+    if selected_piece_type(row,1) == "Rook" &&
+       selected_piece_type(row,2) == "Piece" &&
+       selected_piece_type(row,3) == "Piece" &&
+       selected_piece_type(row,4) == "Piece" &&
+       selected_piece_type(row,5) == "King"
+    end
+  end
+
+  def short_castle?(row)
+    if selected_piece_type(row,8) == "Rook" &&
+       selected_piece_type(row,7) == "Piece" &&
+       selected_piece_type(row,6) == "Piece" &&
+       selected_piece_type(row,5) == "King"
+    end
+  end
+
+  def castle_king(row)
+    if @long_castle
+      move_piece(row ,4 ,row ,1)
+      move_piece(row ,3 ,row ,5)
+      remove_piece(row, 1)
+      remove_piece(row, 5)
+    else
+      move_piece(row ,6 ,row ,8)
+      move_piece(row ,7 ,row ,5)
+      remove_piece(row, 8)
+      remove_piece(row, 5)
+    end
+    reset_board
+  end
+
   def reset_board
     clear_display
     welcome_message
@@ -432,12 +480,12 @@ class Chess
 
   ##########################################
   # update_board submethods
-  def move_piece
-    @chess_board.board[@row_new][@col_new] = @chess_board.board[@row][@col]
+  def move_piece(row_new = @row_new, col_new = @col_new, row = @row, col = @col)
+    @chess_board.board[row_new][col_new] = @chess_board.board[row][col]
   end
 
-  def remove_piece
-    @chess_board.board[@row][@col] = Piece.new(@chess_board.empty_block)
+  def remove_piece(row = @row, col = @col)
+    @chess_board.board[row][col] = Piece.new(@chess_board.empty_block)
   end
   # update_board submethods
   ##########################################
