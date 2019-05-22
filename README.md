@@ -38,8 +38,8 @@ Things to still implement:
 5. execute commands (user input): done
 6. check (moving into check + being put in check): done
 7. checkmate (determine winner + end game): done
-8. castling (long + short side): not done
-9. promotion (changes pawn to additional Queen): not done
+8. castling (long + short side): done
+9. promotion (changes pawn to additional Queen): done
 10. en passant (weird pawn move): not done
 11. saving (YAML): done
 12. loading  (YAML): done
