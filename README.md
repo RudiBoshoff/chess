@@ -50,3 +50,14 @@ Extras to possibly implement:
 14. coloured console text (black pieces/ invalid moves/ check etc.): not done
 
 15. match replays (turn for turn playback with sleep): not done
+
+Known bugs:
+1. occasional false checkmate
+2. able to castle into check
+3. pawns able to move diagonally even if no piece is avalable for capture
+
+
+To run:
+cd into 'chess'
+then run
+> ruby chess.rb
